@@ -361,6 +361,8 @@ export default function reducer(state = initialState, action) {
 
     // Handle clearing upload error
     case CLEAR_UPLOAD_ERROR:
+      console.log('CLEAR_UPLOAD_ERROR action dispatched');
+
       return {
         ...state,
         error: null,

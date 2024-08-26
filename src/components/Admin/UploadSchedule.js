@@ -10,16 +10,25 @@ const UploadSchedule = () => {
   const uploadProgress = useSelector((state) => state.admin.uploadProgress);
   const loading = useSelector((state) => state.admin.loading.upload);
   const message = useSelector((state) => state.admin.schedules.message); // Adjust as necessary
-  const error = useSelector((state) => state.admin.uploadError); // Scoped error state
+  const error = useSelector((state) => state.admin.error); // Corrected error state
 
   useEffect(() => {
-    // Cleanup function to clear error state on unmount
+    console.log("Component mounted or updated");
+    console.log("Current error state:", error);
+    console.log("Current message state:", message);
+    console.log("Current uploadProgress state:", uploadProgress);
+
     return () => {
-      dispatch(clearUploadError());
+      console.log("Component unmounted");
+      // Only clear the error if it's related to the current upload
+      if (error) {
+        dispatch(clearUploadError());
+      }
     };
-  }, [dispatch]);
+  }, [dispatch, error, message, uploadProgress]);
 
   const handleFileChange = (event) => {
+    console.log("File selected:", event.target.files[0]);
     setFile(event.target.files[0]);
   };
 
@@ -31,6 +40,7 @@ const UploadSchedule = () => {
       return;
     }
 
+    console.log("Submitting file:", file);
     const formData = new FormData();
     formData.append("file", file);
 
@@ -39,6 +49,8 @@ const UploadSchedule = () => {
 
   // Function to render error messages in a table
   const renderErrorTable = (error) => {
+    console.log("Rendering error table with error:", error); // Debugging log
+
     if (Array.isArray(error)) {
       return (
         <table className="error-table">
@@ -86,7 +98,12 @@ const UploadSchedule = () => {
       </form>
 
       {message && <p className="upload-message">{message}</p>}
-      {error && renderErrorTable(error)}
+      {error && (
+        <>
+          {console.log("Error state before rendering table:", error)}
+          {renderErrorTable(error)}
+        </>
+      )}
 
       {uploadProgress > 0 && (
         <div className="progress">

@@ -79,8 +79,8 @@ const AllSchedules = () => {
                   className="filter-dropdown"
                 >
                   <option value="">All</option>
-                  {getUniqueValues('user.username').map((value) => (
-                    <option key={value} value={value}>
+                  {getUniqueValues('user.username').map((value, index) => (
+                    <option key={`${value}-${index}`} value={value}>
                       {value}
                     </option>
                   ))}
@@ -94,8 +94,8 @@ const AllSchedules = () => {
                   className="filter-dropdown"
                 >
                   <option value="">All</option>
-                  {getUniqueValues('workingHours').map((value) => (
-                    <option key={value} value={value}>
+                  {getUniqueValues('workingHours').map((value, index) => (
+                    <option key={`${value}-${index}`} value={value}>
                       {value}
                     </option>
                   ))}
@@ -109,8 +109,8 @@ const AllSchedules = () => {
                   className="filter-dropdown"
                 >
                   <option value="">All</option>
-                  {getUniqueValues('offDays').map((value) => (
-                    <option key={value} value={value}>
+                  {getUniqueValues('offDays').map((value, index) => (
+                    <option key={`${value}-${index}`} value={value}>
                       {value}
                     </option>
                   ))}
@@ -124,8 +124,8 @@ const AllSchedules = () => {
                   className="filter-dropdown"
                 >
                   <option value="">All</option>
-                  {getUniqueValues('week').map((value) => (
-                    <option key={value} value={value}>
+                  {getUniqueValues('week').map((value, index) => (
+                    <option key={`${value}-${index}`} value={value}>
                       {value}
                     </option>
                   ))}
