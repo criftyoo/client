@@ -7,7 +7,7 @@ const Landing = () => {
     <div className="landing">
       <div className="dark-overlay">
         <div className="landing-inner">
-            <h1 className="logo">Schedule Manager</h1>
+            <h1 className="logo">Scheduler</h1>
             <LandingTitle/>
             <div className="buttons">
             <Link to="/register" className="btn btn-primary display-block">Sign Up</Link>

@@ -2,7 +2,6 @@ const SHOW_ALERT_MESSAGE = "alerts/SHOW_ALERT_MESSAGE";
 
 export function showAlertMessage(message,type='info') {
   return async function showAlertMessageThunk(dispatch){
-    console.log("Dispatching alert:", message, type);
     dispatch({
       type: SHOW_ALERT_MESSAGE,
       payload: {

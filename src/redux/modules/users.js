@@ -6,8 +6,31 @@ const REGISTER_FAIL = "users/REGISTER_FAIL";
 const USER_LOADED = "users/USER_LOADED";
 const USER_ERROR = "users/USER_ERROR";
 const LOGIN_SUCCESS = "users/LOGIN_SUCCESS";
+const UPDATE_OPEN_FOR_SWAP_SUCCESS = "users/UPDATE_OPEN_FOR_SWAP_SUCCESS";
+const UPDATE_OPEN_FOR_SWAP_FAIL = "users/UPDATE_OPEN_FOR_SWAP_FAIL";
 const LOGIN_FAIL = "users/LOGIN_FAIL";
 const LOGOUT = "users/LOGOUT";
+
+const FETCH_USERS_REQUEST = "users/FETCH_USERS_REQUEST";
+const FETCH_USERS_SUCCESS = "users/FETCH_USERS_SUCCESS";
+const FETCH_USERS_FAILURE = "users/FETCH_USERS_FAILURE";
+
+// Action Creators
+export const fetchUsersRequest = () => ({ type: FETCH_USERS_REQUEST });
+export const fetchUsersSuccess = (users) => ({ type: FETCH_USERS_SUCCESS, payload: users });
+export const fetchUsersFailure = (error) => ({ type: FETCH_USERS_FAILURE, payload: error });
+
+// Thunk Action to fetch users
+
+export const fetchAllUsers = () => async (dispatch) => {
+  dispatch(fetchUsersRequest());
+  try {
+    const response = await api.get("/users/all"); // Adjust the API endpoint as needed
+    dispatch(fetchUsersSuccess(response.data));
+  } catch (error) {
+    dispatch(fetchUsersFailure(error.message));
+  }
+};
 
 export const loadUser = () => async (dispatch) => {
   try {
@@ -47,6 +70,7 @@ export const login = (formData) => async (dispatch) => {
     const res = await api.post("/users/login", formData);
     dispatch({ type: LOGIN_SUCCESS, payload: res.data });
     dispatch(loadUser());
+    
   } catch (error) {
     if (error.response && error.response.data.errors) {
       const errors = error.response.data.errors;
@@ -64,11 +88,53 @@ export const login = (formData) => async (dispatch) => {
   }
 };
 
+export const updateOpenForSwap = (formData) => async (dispatch) => {
+  try {
+    const res = await api.post("/users/updateOpenForSwap", formData);
+    dispatch({ type: UPDATE_OPEN_FOR_SWAP_SUCCESS, payload: res.data });
+    if (res.data.isOpenForSwap) {
+      dispatch(showAlertMessage("You are now open for swaps"));
+    } else {
+      dispatch(showAlertMessage("You will no longer receive swap requests"));
+    }
+  } catch (error) {
+    if (error.response && error.response.data.errors) {
+      const errors = error.response.data.errors;
+      errors.forEach((error) => {
+        dispatch(showAlertMessage(error.msg, "error"));
+      });
+    } else if (error.response && error.response.data.message) {
+      dispatch(showAlertMessage(error.response.data.message, "error"));
+    } else {
+      dispatch(showAlertMessage("An unknown error occurred", "error"));
+    }
+    dispatch({
+      type: UPDATE_OPEN_FOR_SWAP_FAIL,
+    });
+  }
+};
+export const fetchIsOpenForSwap = () => async (dispatch) => {
+  try {
+    const res = await api.get("/users/isOpenForSwap");
+    dispatch({ type: UPDATE_OPEN_FOR_SWAP_SUCCESS, payload: res.data });
+  } catch (error) {
+    dispatch({ type: UPDATE_OPEN_FOR_SWAP_FAIL });
+  }
+};
+
+export const logout = () => (dispatch) => {
+  dispatch({ type: LOGOUT });
+};
+
 const initialState = {
   token: localStorage.getItem("token"),
-  isAuthenticated: null,
+  isAuthenticated: false,
+  isOpenForSwap: false,
   loading: true,
   user: null,
+  users: [], 
+  usersLoading: false,
+  usersError: null,
 };
 
 export default function reducer(state = initialState, action) {
@@ -107,6 +173,35 @@ export default function reducer(state = initialState, action) {
         isAuthenticated: false,
         loading: false,
         user: null,
+      };
+    case UPDATE_OPEN_FOR_SWAP_SUCCESS:
+      return {
+        ...state,
+        isOpenForSwap: payload.isOpenForSwap,
+        loading: false,
+      };
+    case UPDATE_OPEN_FOR_SWAP_FAIL:
+      return {
+        ...state,
+        loading: false,
+      };
+      case FETCH_USERS_REQUEST:
+      return {
+        ...state,
+        usersLoading: true,
+        usersError: null,
+      };
+    case FETCH_USERS_SUCCESS:
+      return {
+        ...state,
+        users: payload,
+        usersLoading: false,
+      };
+    case FETCH_USERS_FAILURE:
+      return {
+        ...state,
+        usersLoading: false,
+        usersError: payload,
       };
     default:
       return state;
