@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const serverUrl = process.env.REACT_APP_SERVER_URL || "http://localhost:4000";
+const serverUrl = "https://scheduler-server-n9z6.onrender.com" || "http://localhost:4000";
 
 export const api = axios.create({
   baseURL: serverUrl,
