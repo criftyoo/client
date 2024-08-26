@@ -1,0 +1,17 @@
+[33mcommit a6e19c54414e65a1b0a9949d9f270df6e9ea351d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: aalzriqat <aalzriqat@gmail.com>
+Date:   Mon Aug 26 16:31:14 2024 +0300
+
+    first commit
+
+[33mcommit a7f2884c8d1b69d717465d0068ae203829d08925[m
+Author: aalzriqat <aalzriqat@gmail.com>
+Date:   Mon Aug 19 12:23:07 2024 +0300
+
+    "Safe Copy - Client"
+
+[33mcommit 705da3b2da90cebc752266bd72cd2e43399d56e3[m[33m ([m[1;31mold-origin/main[m[33m)[m
+Author: aalzriqat <aalzriqat@gmail.com>
+Date:   Sat Aug 17 03:35:58 2024 +0300
+
+    Initialize project using Create React App

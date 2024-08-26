@@ -33,7 +33,7 @@ const AllSwapRequests = () => {
   }
 
   const handleAccept = (id) => {
-    dispatch(updateSwapStatus(id, 'approved', 'Swap has been approved by the WFM', 'admin', 'accepted'));
+    dispatch(updateSwapStatus(id, 'approved', 'Swap has been approved by the WFM', 'admin', 'approved'));
     setUpdatedSwaps((prevSwaps) =>
       prevSwaps.map((swap) =>
         swap._id === id ? { ...swap, status: 'accepted', adminApproval: 'accepted' } : swap
@@ -42,7 +42,7 @@ const AllSwapRequests = () => {
   };
 
   const handleReject = (id) => {
-    dispatch(updateSwapStatus(id, 'declined', 'Swap has been rejected by the WFM', 'admin', 'rejected'));
+    dispatch(updateSwapStatus(id, 'declined', 'Swap has been rejected by the WFM', 'admin', 'declined'));
     setUpdatedSwaps((prevSwaps) =>
       prevSwaps.map((swap) =>
         swap._id === id ? { ...swap, status: 'rejected', adminApproval: 'rejected' } : swap
@@ -54,6 +54,7 @@ const AllSwapRequests = () => {
 
   const filteredSwaps = updatedSwaps.filter((swap) => {
     return (
+      swap.status !== 'pending' &&
       (swap.requester?.username?.toLowerCase().includes(searchQueryLower) ||
         swap.recipient?.username?.toLowerCase().includes(searchQueryLower) ||
         swap.requesterSchedule?.workingHours?.toLowerCase().includes(searchQueryLower) ||
@@ -99,13 +100,13 @@ const AllSwapRequests = () => {
                 <td>{swap.status}</td>
                 
                 <td>
-                  {swap.adminApproval === 'accepted' || swap.adminApproval === 'rejected' ? (
-                    <span>{swap.adminApproval}</span>
-                  ) : (
+                  {swap.status === 'accepted' ? (
                     <>
                       <button onClick={() => handleAccept(swap._id)}>Accept</button>
                       <button onClick={() => handleReject(swap._id)}>Reject</button>
                     </>
+                  ) : (
+                    <span>{swap.adminApproval}</span>
                   )}
                 </td>
               </tr>

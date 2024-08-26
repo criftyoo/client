@@ -144,6 +144,11 @@ export const fetchSentSwaps = (userId) => async (dispatch) => {
 
 /// Update Swap Status Action
 export const updateSwapStatus = (swapId, status, message, role, adminStatus) => async (dispatch) => {
+  console.log('role', role)
+  console.log('adminStatus', adminStatus)
+  console.log('status', status)
+  console.log('message', message)
+  console.log('swapId', swapId)
   try {
     dispatch({ type: UPDATE_SWAP_STATUS_REQUEST });
 

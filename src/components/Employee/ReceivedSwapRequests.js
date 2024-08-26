@@ -32,13 +32,13 @@ const ReceivedSwapRequests = () => {
   }, [receivedSwaps]);
 
   const handleAccept = (swapId) => {
-    dispatch(updateSwapStatus(swapId, "accepted", "Swap accepted.",user.role)).then(() => {
+    dispatch(updateSwapStatus(swapId, "accepted", "Swap accepted.",user.role,'pending')).then(() => {
       dispatch(fetchReceivedSwaps(user._id));
     });
   };
 
   const handleReject = (swapId) => {
-    dispatch(updateSwapStatus(swapId, "rejected", "Swap rejected.",user.role)).then(() => {
+    dispatch(updateSwapStatus(swapId, "rejected", "Swap rejected.",user.role,'cancelled')).then(() => {
       dispatch(fetchReceivedSwaps(user._id));
     });
   };
@@ -69,6 +69,7 @@ const ReceivedSwapRequests = () => {
               <th>Status</th>
               <th>Actions</th>
               <th>Approval</th>
+              
             </tr>
           </thead>
           <tbody>
