@@ -9,8 +9,8 @@ const UploadSchedule = () => {
   // Access Redux state
   const uploadProgress = useSelector((state) => state.admin.uploadProgress);
   const loading = useSelector((state) => state.admin.loading.upload);
-  const message = useSelector((state) => state.admin.schedules.message); // Adjust as necessary
-  const error = useSelector((state) => state.admin.error); // Corrected error state
+  const message = useSelector((state) => state.admin.schedules.message); 
+  const error = useSelector((state) => state.admin.error); 
 
   useEffect(() => {
     console.log("Component mounted or updated");
@@ -20,7 +20,6 @@ const UploadSchedule = () => {
 
     return () => {
       console.log("Component unmounted");
-      // Only clear the error if it's related to the current upload
       if (error) {
         dispatch(clearUploadError());
       }
@@ -49,7 +48,7 @@ const UploadSchedule = () => {
 
   // Function to render error messages in a table
   const renderErrorTable = (error) => {
-    console.log("Rendering error table with error:", error); // Debugging log
+    console.log("Rendering error table with error:", error);
 
     if (Array.isArray(error)) {
       return (
@@ -74,6 +73,7 @@ const UploadSchedule = () => {
         </table>
       );
     }
+
     return <p className="upload-error-message">{typeof error === 'string' ? error : JSON.stringify(error)}</p>;
   };
 
