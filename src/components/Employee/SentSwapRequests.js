@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchSentSwaps } from "../../redux/modules/admin"; 
+import { fetchSentSwaps } from "../../redux/modules/admin";
 
 const SentSwapRequests = () => {
   const dispatch = useDispatch();
@@ -29,21 +29,56 @@ const SentSwapRequests = () => {
     return <p>{error}</p>;
   }
 
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    const options = {
+      timeZone: 'Asia/Amman',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    };
+    const formatter = new Intl.DateTimeFormat('en-GB', options);
+    const [
+      { value: day },,
+      { value: month },,
+      { value: year },,
+      { value: hours },,
+      { value: minutes },,
+      { value: seconds }
+    ] = formatter.formatToParts(date);
+  
+    return `${day}-${month}-${year} , ${hours}:${minutes}:${seconds}`;
+  };
+
+  // Sort sentSwaps by week in descending order
+  const sortedSwaps = [...sentSwaps].sort((a, b) => {
+    const weekA = a.recipientSchedule?.week || 0;
+    const weekB = b.recipientSchedule?.week || 0;
+    return weekB - weekA;
+  });
+
   return (
     <div className="main">
-      <h2 className="form-title">Swap Requests Sent By You</h2>
-      {sentSwaps.length > 0 ? (
+      <h2 className="form-title">Sent Swap Requests</h2>
+      {sortedSwaps.length > 0 ? (
         <table className="swap-table">
           <thead>
             <tr>
-              <th>Recipient</th>
-              <th>Schedule</th>
+              <th>Sent To</th>
+              <th>Requested Schedule</th>
+              <th>Creation Date</th>
+              <th>Last Update</th>
               <th>Status</th>
-              <th>Actions</th>
+              <th>Admin Approval</th>
+              <th>Week</th>
             </tr>
           </thead>
           <tbody>
-            {sentSwaps.map((swap) => (
+            {sortedSwaps.map((swap) => (
               <tr key={swap._id}>
                 <td>{swap.recipient?.username || "N/A"}</td>
                 <td>
@@ -53,36 +88,11 @@ const SentSwapRequests = () => {
                       }, Off Days: ${swap.recipientSchedule.offDays || "N/A"}`
                     : "N/A"}
                 </td>
-                <td>
-                  {(() => {
-                    switch (swap.status) {
-                      case "pending":
-                        return <span>Pending</span>;
-                      case "accepted":
-                        return <span>Accepted</span>;
-                      case "rejected":
-                        return <span>Rejected</span>;
-                        case "cancelled":
-                        return <span>Cancelled</span>;
-                      default:
-                        return <span>Unknown Status</span>;
-                    }
-                  })()}
-                </td>
-                <td>
-                  {(() => {
-                    switch (swap.adminApproval) {
-                      case "pending":
-                        return <span>Awaiting Approval</span>;
-                      case "accepted":
-                        return <span>Accepted</span>;
-                      case "rejected":
-                        return <span>Rejected</span>;
-                      default:
-                        return <span>Unknown Status</span>;
-                    }
-                  })()}
-                </td>
+                <td>{formatTime(swap.createdAt)}</td>
+                <td>{formatTime(swap.updatedAt)}</td>
+                <td>{swap.status}</td>
+                <td>{swap.adminApproval}</td>
+                <td>{swap.recipientSchedule.week}</td>
               </tr>
             ))}
           </tbody>

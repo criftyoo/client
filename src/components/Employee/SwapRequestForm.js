@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createSwapRequestAction, resetSwapRequest } from "../../redux/modules/employee";
+import {
+  createSwapRequestAction,
+  resetSwapRequest,
+} from "../../redux/modules/employee";
 import { fetchAllSchedules } from "../../redux/modules/admin";
 import { fetchAllUsers } from "../../redux/modules/users"; // Import the new action
 
@@ -17,7 +20,9 @@ const SwapRequestForm = () => {
   }, [dispatch]);
 
   // Accessing schedules, users, and swap status from Redux state
-  const { error, loadingSwap, swapRequest } = useSelector((state) => state.employee);
+  const { error, loadingSwap, swapRequest } = useSelector(
+    (state) => state.employee
+  );
   const { schedules, loadingSchedules } = useSelector((state) => state.admin);
   const { users, usersLoading, user } = useSelector((state) => state.users); // Access users and user from state
 
@@ -30,14 +35,18 @@ const SwapRequestForm = () => {
     }
     const recipientScheduleId = selectedScheduleId;
 
-    const requesterSchedule = schedules.find((schedule) => schedule.user && schedule.user._id === user._id);
+    const requesterSchedule = schedules.find(
+      (schedule) => schedule.user && schedule.user._id === user._id
+    );
 
     if (!requesterSchedule) {
       setFormError("Requester schedule not found.");
       return;
     }
 
-    const recipientSchedule = schedules.find((schedule) => schedule._id === recipientScheduleId);
+    const recipientSchedule = schedules.find(
+      (schedule) => schedule._id === recipientScheduleId
+    );
 
     if (!recipientSchedule) {
       setFormError("Recipient schedule not found.");
@@ -61,7 +70,7 @@ const SwapRequestForm = () => {
   // Filter schedules for the dropdown based on fetched users
   const availableSchedules = schedules.filter((schedule) => {
     const scheduleUser = users.find((u) => u._id === schedule.user._id);
-   
+
     return (
       scheduleUser &&
       scheduleUser._id !== user._id &&
@@ -109,7 +118,9 @@ const SwapRequestForm = () => {
                 <option value="">--Select--</option>
                 {availableSchedules.map((schedule) => (
                   <option key={schedule._id} value={schedule._id}>
-                    {schedule.workingHours} - Off Days: {schedule.offDays.join(", ")}
+                    {schedule.workingHours} - Off Days:{" "}
+                    {schedule.offDays.join(", ")} - Week:{" "}
+                    {schedule.week}
                   </option>
                 ))}
               </select>
@@ -117,7 +128,10 @@ const SwapRequestForm = () => {
               <p>No one is available to swap with.</p>
             )}
 
-            <button type="submit" disabled={loadingSwap || availableSchedules.length === 0}>
+            <button
+              type="submit"
+              disabled={loadingSwap || availableSchedules.length === 0}
+            >
               {loadingSwap ? "Submitting..." : "Submit"}
             </button>
           </form>

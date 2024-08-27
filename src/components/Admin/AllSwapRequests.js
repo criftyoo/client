@@ -14,6 +14,7 @@ const AllSwapRequests = () => {
   const [requesterScheduleFilter, setRequesterScheduleFilter] = useState('');
   const [recipientScheduleFilter, setRecipientScheduleFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [approvalFilter, setApprovalFilter] = useState('');
   const [updatedSwaps, setUpdatedSwaps] = useState([]);
 
   useEffect(() => {
@@ -23,6 +24,22 @@ const AllSwapRequests = () => {
   useEffect(() => {
     setUpdatedSwaps(swaps);
   }, [swaps]);
+
+  const getUniqueValues = (key) => {
+    const values = swaps.map((swap) => {
+      const keys = key.split('.');
+      let value = swap;
+      for (const k of keys) {
+        value = value ? value[k] : 'N/A';
+      }
+      return value || 'N/A';
+    });
+    return [...new Set(values)];
+  };
+
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -59,34 +76,116 @@ const AllSwapRequests = () => {
         swap.recipient?.username?.toLowerCase().includes(searchQueryLower) ||
         swap.requesterSchedule?.workingHours?.toLowerCase().includes(searchQueryLower) ||
         swap.recipientSchedule?.workingHours?.toLowerCase().includes(searchQueryLower) ||
-        swap.status?.toLowerCase().includes(searchQueryLower)) &&
+        swap.status?.toLowerCase().includes(searchQueryLower) ||
+        swap.adminApproval?.toLowerCase().includes(searchQueryLower)) &&
       (requesterFilter === '' || swap.requester?.username === requesterFilter) &&
       (recipientFilter === '' || swap.recipient?.username === recipientFilter) &&
       (requesterScheduleFilter === '' || swap.requesterSchedule?.workingHours === requesterScheduleFilter) &&
       (recipientScheduleFilter === '' || swap.recipientSchedule?.workingHours === recipientScheduleFilter) &&
-      (statusFilter === '' || swap.status === statusFilter)
+      (statusFilter === '' || swap.status === statusFilter) &&
+      (approvalFilter === '' || swap.adminApproval === approvalFilter)
     );
   });
 
   console.log("Filtered Swaps:", filteredSwaps);
 
   return (
-    <div>
+    <div className="main">
+      <h2 className="form-title">All Swaps</h2>
       <input
         type="text"
-        placeholder="Search..."
+        placeholder="Search by username, working hours, off days, or week..."
         value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
+        onChange={handleSearch}
+        className="search-input"
       />
       <table>
         <thead>
           <tr>
-            <th>Requester</th>
-            <th>Recipient</th>
-            <th>Requester Schedule</th>
-            <th>Recipient Schedule</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>
+              Requester
+              <select
+                value={requesterFilter}
+                onChange={(e) => setRequesterFilter(e.target.value)}
+              >
+                <option value="">All</option>
+                {getUniqueValues('requester.username').map((value, index) => (
+                  <option key={`${value}-${index}`} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </select>
+            </th>
+            <th>
+              Recipient
+              <select
+                value={recipientFilter}
+                onChange={(e) => setRecipientFilter(e.target.value)}
+              >
+                <option value="">All</option>
+                {getUniqueValues('recipient.username').map((value, index) => (
+                  <option key={`${value}-${index}`} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </select>
+            </th>
+            <th>
+              Requester Schedule
+              <select
+                value={requesterScheduleFilter}
+                onChange={(e) => setRequesterScheduleFilter(e.target.value)}
+              >
+                <option value="">All</option>
+                {getUniqueValues('requesterSchedule.workingHours').map((value, index) => (
+                  <option key={`${value}-${index}`} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </select>
+            </th>
+            <th>
+              Recipient Schedule
+              <select
+                value={recipientScheduleFilter}
+                onChange={(e) => setRecipientScheduleFilter(e.target.value)}
+              >
+                <option value="">All</option>
+                {getUniqueValues('recipientSchedule.workingHours').map((value, index) => (
+                  <option key={`${value}-${index}`} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </select>
+            </th>
+            <th>
+              Status
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+              >
+                <option value="">All</option>
+                {getUniqueValues('status').map((value, index) => (
+                  <option key={`${value}-${index}`} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </select>
+            </th>
+            <th>
+              Approval
+              <select
+                value={approvalFilter}
+                onChange={(e) => setApprovalFilter(e.target.value)}
+              >
+                <option value="">All</option>
+                {getUniqueValues('adminApproval').map((value, index) => (
+                  <option key={`${value}-${index}`} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </select>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -98,9 +197,8 @@ const AllSwapRequests = () => {
                 <td>{swap.requesterSchedule.workingHours}</td>
                 <td>{swap.recipientSchedule.workingHours}</td>
                 <td>{swap.status}</td>
-                
                 <td>
-                  {swap.status === 'accepted' ? (
+                  {swap.status === 'pending' ? (
                     <>
                       <button onClick={() => handleAccept(swap._id)}>Accept</button>
                       <button onClick={() => handleReject(swap._id)}>Reject</button>

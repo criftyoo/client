@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllSchedules } from '../../redux/modules/admin';
 
@@ -15,7 +15,7 @@ const AllSchedules = () => {
     dispatch(fetchAllSchedules()); // Fetch all schedules when the component mounts
   }, [dispatch]);
 
-  const getUniqueValues = (key) => {
+  const getUniqueValues = useMemo(() => (key) => {
     const values = schedules.map((schedule) => {
       const keys = key.split('.');
       let value = schedule;
@@ -25,13 +25,13 @@ const AllSchedules = () => {
       return value || 'N/A';
     });
     return [...new Set(values)];
-  };
+  }, [schedules]);
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
   };
 
-  const filteredSchedules = schedules.filter((schedule) => {
+  const filteredSchedules = useMemo(() => schedules.filter((schedule) => {
     const username = schedule.user?.username || 'N/A';
     const workingHours = schedule.workingHours || 'N/A';
     const offDays = schedule.offDays?.join(', ') || 'N/A';
@@ -47,14 +47,14 @@ const AllSchedules = () => {
       (offDaysFilter === '' || offDays === offDaysFilter) &&
       (weekFilter === '' || week === weekFilter)
     );
-  });
+  }), [schedules, searchQuery, usernameFilter, workingHoursFilter, offDaysFilter, weekFilter]);
 
   if (loading.schedules) {
     return <p className="loading-message">Loading...</p>;
   }
 
   if (error) {
-    return <p>{error}</p>;
+    return <p className="error-message">An error occurred: {error}</p>;
   }
 
   return (
@@ -66,6 +66,7 @@ const AllSchedules = () => {
         value={searchQuery}
         onChange={handleSearch}
         className="search-input"
+        aria-label="Search schedules"
       />
       {filteredSchedules.length > 0 ? (
         <table className="schedule-table">
@@ -77,6 +78,7 @@ const AllSchedules = () => {
                   value={usernameFilter}
                   onChange={(e) => setUsernameFilter(e.target.value)}
                   className="filter-dropdown"
+                  aria-label="Filter by username"
                 >
                   <option value="">All</option>
                   {getUniqueValues('user.username').map((value, index) => (
@@ -92,6 +94,7 @@ const AllSchedules = () => {
                   value={workingHoursFilter}
                   onChange={(e) => setWorkingHoursFilter(e.target.value)}
                   className="filter-dropdown"
+                  aria-label="Filter by working hours"
                 >
                   <option value="">All</option>
                   {getUniqueValues('workingHours').map((value, index) => (
@@ -107,6 +110,7 @@ const AllSchedules = () => {
                   value={offDaysFilter}
                   onChange={(e) => setOffDaysFilter(e.target.value)}
                   className="filter-dropdown"
+                  aria-label="Filter by off days"
                 >
                   <option value="">All</option>
                   {getUniqueValues('offDays').map((value, index) => (
@@ -122,6 +126,7 @@ const AllSchedules = () => {
                   value={weekFilter}
                   onChange={(e) => setWeekFilter(e.target.value)}
                   className="filter-dropdown"
+                  aria-label="Filter by week"
                 >
                   <option value="">All</option>
                   {getUniqueValues('week').map((value, index) => (

@@ -49,6 +49,7 @@ const Navbar = () => {
               </button>
             </>
           )}
+          <li>Notifications</li>
           <li>
             {isAuthenticated ? (
               <Link to="/" onClick={handleLogout}>
@@ -58,6 +59,7 @@ const Navbar = () => {
               <Link to="/login">Login</Link>
             )}
           </li>
+          
         </ul>
       </Fragment>
     </nav>

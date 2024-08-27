@@ -90,12 +90,14 @@ body {
 .swap-table {
   width: 100%;
   border-collapse: collapse;
+  
 }
 
 .swap-table th, .swap-table td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
+  text-decoration-color: #007bff;
 }
 
 .swap-table th {

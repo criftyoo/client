@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchReceivedSwaps, updateSwapStatus } from '../../redux/modules/admin';
+import {
+  fetchReceivedSwaps,
+  updateSwapStatus,
+} from "../../redux/modules/admin";
 
 const ReceivedSwapRequests = () => {
   const dispatch = useDispatch();
@@ -32,15 +35,76 @@ const ReceivedSwapRequests = () => {
   }, [receivedSwaps]);
 
   const handleAccept = (swapId) => {
-    dispatch(updateSwapStatus(swapId, "accepted", "Swap accepted.",user.role,'pending')).then(() => {
+    dispatch(
+      updateSwapStatus(
+        swapId,
+        "accepted",
+        "Swap accepted.",
+        user.role,
+        "pending"
+      )
+    ).then(() => {
       dispatch(fetchReceivedSwaps(user._id));
     });
   };
 
   const handleReject = (swapId) => {
-    dispatch(updateSwapStatus(swapId, "rejected", "Swap rejected.",user.role,'cancelled')).then(() => {
+    dispatch(
+      updateSwapStatus(
+        swapId,
+        "rejected",
+        "Swap rejected.",
+        user.role,
+        "cancelled"
+      )
+    ).then(() => {
       dispatch(fetchReceivedSwaps(user._id));
     });
+  };
+
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    const options = {
+      timeZone: "Asia/Amman",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    };
+    const formatter = new Intl.DateTimeFormat("en-GB", options);
+    const [
+      { value: day },
+      ,
+      { value: month },
+      ,
+      { value: year },
+      ,
+      { value: hours },
+      ,
+      { value: minutes },
+      ,
+      { value: seconds },
+    ] = formatter.formatToParts(date);
+
+    return `${day}-${month}-${year} ,${hours}:${minutes}:${seconds}`;
+  };
+
+  const getStatusStyle = (adminApproval) => {
+    switch (adminApproval) {
+      case "pending":
+        return { backgroundColor: "yellow" };
+      case "accepted":
+      case "approved":
+        return { backgroundColor: "green", color: "white" };
+      case "rejected":
+      case "declined":
+        return { backgroundColor: "red", color: "white" };
+      default:
+        return {};
+    }
   };
 
   if (!isAuthenticated) {
@@ -59,17 +123,19 @@ const ReceivedSwapRequests = () => {
 
   return (
     <div className="main">
-      <h2 className="form-title">Swap Requests Sent To You</h2>
+      <h2 className="form-title">Received Swap Requests</h2>
       {transformedSwaps.length > 0 ? (
         <table className="swap-table">
           <thead>
             <tr>
               <th>Requester</th>
               <th>Schedule</th>
+              <th>Creation Date</th>
+              <th>Last Update</th>
               <th>Status</th>
               <th>Actions</th>
               <th>Approval</th>
-              
+              <th>Week</th>
             </tr>
           </thead>
           <tbody>
@@ -78,34 +144,38 @@ const ReceivedSwapRequests = () => {
                 <td>{swap.requester?.username || "N/A"}</td>
                 <td>
                   {swap.requesterSchedule
-                    ? `Working Hours: ${swap.requesterSchedule.workingHours || "N/A"}, Off Days: ${swap.requesterSchedule.offDays || "N/A"}`
+                    ? `Working Hours: ${
+                        swap.requesterSchedule.workingHours || "N/A"
+                      }, Off Days: ${swap.requesterSchedule.offDays || "N/A"}`
                     : "N/A"}
                 </td>
+                <td>{formatTime(swap.createdAt)}</td>
+                <td>{formatTime(swap.updatedAt)}</td>
                 <td>{swap.status || "N/A"}</td>
                 <td>
                   {swap.status === "pending" ? (
                     <>
-                      <button className="btn btn-primary" onClick={() => handleAccept(swap._id)}>Accept</button>
-                      <button className="btn btn-danger" onClick={() => handleReject(swap._id)}>Reject</button>
+                      <button
+                        className="btn btn-primary"
+                        onClick={() => handleAccept(swap._id)}
+                      >
+                        Accept
+                      </button>
+                      <button
+                        className="btn btn-danger"
+                        onClick={() => handleReject(swap._id)}
+                      >
+                        Reject
+                      </button>
                     </>
                   ) : (
-                    <span>{swap.status === "accepted" ? "Accepted" : "Rejected"}</span>
+                    <span>{swap.status}</span>
                   )}
                 </td>
-                <td>
-                  {(() => {
-                    switch (swap.adminApproval) {
-                      case "pending":
-                        return <span>Awaiting Approval</span>;
-                      case "accepted":
-                        return <span>Accepted</span>;
-                      case "rejected":
-                        return <span>Rejected</span>;
-                      default:
-                        return <span>Unknown Status</span>;
-                    }
-                  })()}
+                <td style={getStatusStyle(swap.status)}>
+                  {swap.adminApproval}
                 </td>
+                <td>{swap.requesterSchedule.week}</td>
               </tr>
             ))}
           </tbody>
