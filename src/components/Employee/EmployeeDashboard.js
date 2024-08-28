@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import Sidebar from '../common/Sidebar';
 import SwapRequestForm from './SwapRequestForm';
 import SentReceivedSwaps from './SentReceivedSwaps';
-import ManageSwaps from './ManageSwaps';
+import PreferenceForm from './PreferenceForm';
 
 const EmployeeDashboard = () => {
   return (
@@ -14,6 +14,7 @@ const EmployeeDashboard = () => {
         <Routes>
           <Route path="swap-request-form" element={<SwapRequestForm />} />
           <Route path="employee-swap-requests" element={<SentReceivedSwaps />} />
+          <Route path="preferences" element={<PreferenceForm />} />
         </Routes>
       </div>
     </div>

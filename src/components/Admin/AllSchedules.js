@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllSchedules } from '../../redux/modules/admin';
+import * as XLSX from 'xlsx';
 
 const AllSchedules = () => {
   const dispatch = useDispatch();
@@ -49,6 +50,24 @@ const AllSchedules = () => {
     );
   }), [schedules, searchQuery, usernameFilter, workingHoursFilter, offDaysFilter, weekFilter]);
 
+  const exportToExcel = () => {
+    try {
+      const worksheet = XLSX.utils.json_to_sheet(filteredSchedules.map(schedule => ({
+        Username: schedule.user?.username || 'N/A',
+        'Working Hours': schedule.workingHours || 'N/A',
+        'Off Days': schedule.offDays?.join(', ') || 'N/A',
+        Week: schedule.week || 'N/A'
+      })));
+      const workbook = XLSX.utils.book_new();
+      const weeks = [...new Set(filteredSchedules.map(schedule => schedule.week || 'N/A'))].join('-');
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Schedules');
+      XLSX.writeFile(workbook, `schedules-Weeks${weeks}.xlsx`);
+    } catch (error) {
+      console.error('Error exporting to Excel:', error);
+      alert('An error occurred while exporting to Excel. Please try again.');
+    }
+  };
+
   if (loading.schedules) {
     return <p className="loading-message">Loading...</p>;
   }
@@ -68,6 +87,7 @@ const AllSchedules = () => {
         className="search-input"
         aria-label="Search schedules"
       />
+      <button onClick={exportToExcel}>Download as Excel</button>
       {filteredSchedules.length > 0 ? (
         <table className="schedule-table">
           <thead>

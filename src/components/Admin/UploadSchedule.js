@@ -4,6 +4,7 @@ import { uploadSchedule, clearUploadError } from "../../redux/modules/admin";
 
 const UploadSchedule = () => {
   const [file, setFile] = useState(null);
+  const [localError, setLocalError] = useState(null);
   const dispatch = useDispatch();
   
   // Access Redux state
@@ -13,13 +14,7 @@ const UploadSchedule = () => {
   const error = useSelector((state) => state.admin.error); 
 
   useEffect(() => {
-    console.log("Component mounted or updated");
-    console.log("Current error state:", error);
-    console.log("Current message state:", message);
-    console.log("Current uploadProgress state:", uploadProgress);
-
     return () => {
-      console.log("Component unmounted");
       if (error) {
         dispatch(clearUploadError());
       }
@@ -27,11 +22,10 @@ const UploadSchedule = () => {
   }, [dispatch, error, message, uploadProgress]);
 
   const handleFileChange = (event) => {
-    console.log("File selected:", event.target.files[0]);
     setFile(event.target.files[0]);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (!file) {
@@ -39,17 +33,18 @@ const UploadSchedule = () => {
       return;
     }
 
-    console.log("Submitting file:", file);
     const formData = new FormData();
     formData.append("file", file);
 
-    dispatch(uploadSchedule(formData));
+    try {
+      await dispatch(uploadSchedule(formData));
+    } catch (err) {
+      setLocalError("An error occurred during the upload. Please try again.");
+    }
   };
 
   // Function to render error messages in a table
   const renderErrorTable = (error) => {
-    console.log("Rendering error table with error:", error);
-
     if (Array.isArray(error)) {
       return (
         <table className="error-table">
@@ -98,9 +93,9 @@ const UploadSchedule = () => {
       </form>
 
       {message && <p className="upload-message">{message}</p>}
-      {error && (
+      {(error || localError) && (
         <>
-          {console.log("Error state before rendering table:", error)}
+          {localError && <p className="upload-error-message">{localError}</p>}
           {renderErrorTable(error)}
         </>
       )}

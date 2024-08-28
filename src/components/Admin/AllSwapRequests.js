@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSwaps, updateSwapStatus } from '../../redux/modules/admin';
+import * as XLSX from 'xlsx';
 
 const AllSwapRequests = () => {
   const dispatch = useDispatch();
@@ -16,9 +17,17 @@ const AllSwapRequests = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [approvalFilter, setApprovalFilter] = useState('');
   const [updatedSwaps, setUpdatedSwaps] = useState([]);
+  const [actionError, setActionError] = useState(null);
 
   useEffect(() => {
-    dispatch(fetchSwaps());
+    const fetchData = async () => {
+      try {
+        await dispatch(fetchSwaps());
+      } catch (err) {
+        console.error('Error fetching swaps:', err);
+      }
+    };
+    fetchData();
   }, [dispatch]);
 
   useEffect(() => {
@@ -49,45 +58,70 @@ const AllSwapRequests = () => {
     return <div>Error fetching swaps: {error}</div>;
   }
 
-  const handleAccept = (id) => {
-    dispatch(updateSwapStatus(id, 'approved', 'Swap has been approved by the WFM', 'admin', 'approved'));
-    setUpdatedSwaps((prevSwaps) =>
-      prevSwaps.map((swap) =>
-        swap._id === id ? { ...swap, status: 'accepted', adminApproval: 'accepted' } : swap
-      )
-    );
+  const handleAccept = async (id) => {
+    try {
+      await dispatch(updateSwapStatus(id, 'approved', 'Swap has been approved by the WFM', 'admin', 'approved'));
+      setUpdatedSwaps((prevSwaps) =>
+        prevSwaps.map((swap) =>
+          swap._id === id ? { ...swap, status: 'accepted', adminApproval: 'accepted' } : swap
+        )
+      );
+    } catch (err) {
+      setActionError('Error approving swap');
+      console.error('Error approving swap:', err);
+    }
   };
 
-  const handleReject = (id) => {
-    dispatch(updateSwapStatus(id, 'declined', 'Swap has been rejected by the WFM', 'admin', 'declined'));
-    setUpdatedSwaps((prevSwaps) =>
-      prevSwaps.map((swap) =>
-        swap._id === id ? { ...swap, status: 'rejected', adminApproval: 'rejected' } : swap
-      )
-    );
+  const handleReject = async (id) => {
+    try {
+      await dispatch(updateSwapStatus(id, 'declined', 'Swap has been rejected by the WFM', 'admin', 'declined'));
+      setUpdatedSwaps((prevSwaps) =>
+        prevSwaps.map((swap) =>
+          swap._id === id ? { ...swap, status: 'rejected', adminApproval: 'rejected' } : swap
+        )
+      );
+    } catch (err) {
+      setActionError('Error rejecting swap');
+      console.error('Error rejecting swap:', err);
+    }
   };
 
   const searchQueryLower = searchQuery.toLowerCase();
 
   const filteredSwaps = updatedSwaps.filter((swap) => {
+    const requesterSchedule = `${swap.requesterSchedule.workingHours} (Week ${swap.requesterSchedule.week})`;
+    const recipientSchedule = `${swap.recipientSchedule.workingHours} (Week ${swap.recipientSchedule.week})`;
+
     return (
       swap.status !== 'pending' &&
       (swap.requester?.username?.toLowerCase().includes(searchQueryLower) ||
         swap.recipient?.username?.toLowerCase().includes(searchQueryLower) ||
-        swap.requesterSchedule?.workingHours?.toLowerCase().includes(searchQueryLower) ||
-        swap.recipientSchedule?.workingHours?.toLowerCase().includes(searchQueryLower) ||
+        requesterSchedule.toLowerCase().includes(searchQueryLower) ||
+        recipientSchedule.toLowerCase().includes(searchQueryLower) ||
         swap.status?.toLowerCase().includes(searchQueryLower) ||
         swap.adminApproval?.toLowerCase().includes(searchQueryLower)) &&
       (requesterFilter === '' || swap.requester?.username === requesterFilter) &&
       (recipientFilter === '' || swap.recipient?.username === recipientFilter) &&
-      (requesterScheduleFilter === '' || swap.requesterSchedule?.workingHours === requesterScheduleFilter) &&
-      (recipientScheduleFilter === '' || swap.recipientSchedule?.workingHours === recipientScheduleFilter) &&
+      (requesterScheduleFilter === '' || requesterSchedule === requesterScheduleFilter) &&
+      (recipientScheduleFilter === '' || recipientSchedule === recipientScheduleFilter) &&
       (statusFilter === '' || swap.status === statusFilter) &&
       (approvalFilter === '' || swap.adminApproval === approvalFilter)
     );
   });
 
-  console.log("Filtered Swaps:", filteredSwaps);
+  const exportToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(filteredSwaps.map(swap => ({
+      Requester: swap.requester?.username || 'N/A',
+      Recipient: swap.recipient?.username || 'N/A',
+      'Requester Schedule': `${swap.requesterSchedule.workingHours} (Week ${swap.requesterSchedule.week})` || 'N/A',
+      'Recipient Schedule': `${swap.recipientSchedule.workingHours} (Week ${swap.recipientSchedule.week})` || 'N/A',
+      Status: swap.status || 'N/A',
+      Approval: swap.adminApproval || 'N/A'
+    })));
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Swaps');
+    XLSX.writeFile(workbook, 'FilteredSwaps.xlsx');
+  };
 
   return (
     <div className="main">
@@ -99,6 +133,8 @@ const AllSwapRequests = () => {
         onChange={handleSearch}
         className="search-input"
       />
+      <button onClick={exportToExcel}>Download as Excel</button>
+      {actionError && <div className="error">{actionError}</div>}
       <table>
         <thead>
           <tr>
@@ -142,6 +178,11 @@ const AllSwapRequests = () => {
                     {value}
                   </option>
                 ))}
+                {getUniqueValues('requesterSchedule.week').map((value, index) => (
+                  <option key={`Week ${value}-${index}`} value={`Week ${value}`}>
+                    Week {value}
+                  </option>
+                ))}
               </select>
             </th>
             <th>
@@ -154,6 +195,11 @@ const AllSwapRequests = () => {
                 {getUniqueValues('recipientSchedule.workingHours').map((value, index) => (
                   <option key={`${value}-${index}`} value={value}>
                     {value}
+                  </option>
+                ))}
+                {getUniqueValues('recipientSchedule.week').map((value, index) => (
+                  <option key={`Week ${value}-${index}`} value={`Week ${value}`}>
+                    Week {value}
                   </option>
                 ))}
               </select>
@@ -194,8 +240,8 @@ const AllSwapRequests = () => {
               <tr key={swap._id}>
                 <td>{swap.requester.username}</td>
                 <td>{swap.recipient.username}</td>
-                <td>{swap.requesterSchedule.workingHours}</td>
-                <td>{swap.recipientSchedule.workingHours}</td>
+                <td>{`${swap.requesterSchedule.workingHours} (Week ${swap.requesterSchedule.week})`}</td>
+                <td>{`${swap.recipientSchedule.workingHours} (Week ${swap.recipientSchedule.week})`}</td>
                 <td>{swap.status}</td>
                 <td>
                   {swap.status === 'pending' ? (

@@ -22,12 +22,14 @@ const Sidebar = () => {
             <li><Link to="upload-schedule">{isExpanded && 'Upload Schedule'}</Link></li>
             <li><Link to="swap-request">{isExpanded && 'Swap Requests'}</Link></li>
             <li><Link to="all-schedules">{isExpanded && 'View Schedules'}</Link></li>
+            <li><Link to="all-preferences">{isExpanded && 'View Preferences'}</Link></li>
           </>
         )}
         {userRole === 'employee' && (
           <>
             <li><Link to="swap-request-form">{isExpanded && 'Swap Requester'}</Link></li>
             <li><Link to="employee-swap-requests">{isExpanded && 'Sent Received Swaps'}</Link></li>
+            <li><Link to="preferences">{isExpanded && 'Preferences'}</Link></li>
           </>
         )}
       </ul>
