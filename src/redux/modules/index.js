@@ -4,13 +4,15 @@ import alerts from "./alerts";
 import admin from "./admin";
 import employee from "./employee";
 import preferences from "./preferences";
+import leaves from "./leaves";
 
-export default combineReducers({
+const rootReducer = combineReducers({
   users,
   alerts,
   admin,
   employee,
   preferences,
+  leaves,
 });
 
-
+export default rootReducer;

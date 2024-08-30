@@ -23,6 +23,7 @@ const Sidebar = () => {
             <li><Link to="swap-request">{isExpanded && 'Swap Requests'}</Link></li>
             <li><Link to="all-schedules">{isExpanded && 'View Schedules'}</Link></li>
             <li><Link to="all-preferences">{isExpanded && 'View Preferences'}</Link></li>
+            <li><Link to="leave-requests">{isExpanded && 'Leave Requests'}</Link></li>
           </>
         )}
         {userRole === 'employee' && (
@@ -30,6 +31,7 @@ const Sidebar = () => {
             <li><Link to="swap-request-form">{isExpanded && 'Swap Requester'}</Link></li>
             <li><Link to="employee-swap-requests">{isExpanded && 'Sent Received Swaps'}</Link></li>
             <li><Link to="preferences">{isExpanded && 'Preferences'}</Link></li>
+            <li><Link to="employee-leave-requests">{isExpanded && 'Leave Requests'}</Link></li>
           </>
         )}
       </ul>

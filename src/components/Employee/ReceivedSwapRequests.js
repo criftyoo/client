@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchReceivedSwaps,
   updateSwapStatus,
+  clearUploadError, // Import the action to reset the error state
 } from "../../redux/modules/admin";
 
 const ReceivedSwapRequests = () => {
@@ -33,6 +34,20 @@ const ReceivedSwapRequests = () => {
       setTransformedSwaps([]); // Reset if there are no swaps
     }
   }, [receivedSwaps]);
+
+  useEffect(() => {
+    // Reset state when an error occurs
+    if (error) {
+      setTransformedSwaps([]);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    // Cleanup function to reset error state when component unmounts or auth state changes
+    return () => {
+      dispatch(clearUploadError());
+    };
+  }, [dispatch, isAuthenticated]);
 
   const handleAccept = (swapId) => {
     dispatch(
