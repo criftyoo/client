@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { Fragment } from "react";
 import { useSelector } from "react-redux";
 import Landing from "./components/common/Landing";
@@ -21,65 +21,74 @@ import PrivateRoute from "./components/common/PrivateRoute";
 import Notification from "./components/common/Notification"; // Import Notification component
 
 const options = {
-  position: positions.TOP_CENTER,
+  position: positions.TOP_RIGHT,
   timeout: 5000,
   offset: "30px",
   transition: transitions.SCALE,
 };
+
+function Main() {
+  const location = useLocation();
+  const hideNavbarPaths = ["/", "/login", "/register"];
+
+  return (
+    <>
+      <Alert />
+      {!hideNavbarPaths.includes(location.pathname) && <Navbar />}
+      <Notification /> {/* Add Notification component */}
+      <ErrorBoundary>
+        <Routes>
+          <Route exact path="/" element={<Landing />} />
+          <Route exact path="/register" element={<Register />} />
+          <Route exact path="/login" element={<Login />} />
+          <Route
+            exact
+            path="/admin/*"
+            element={
+              <PrivateRoute role="admin">
+                <AdminDashboard />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            exact
+            path="/employee/*"
+            element={
+              <PrivateRoute role="employee">
+                <EmployeeDashboard />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            exact
+            path="/home"
+            element={
+              <PrivateRoute>
+                <Swapper />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            exact
+            path="/requester"
+            element={
+              <PrivateRoute>
+                <SwapRequestForm />
+              </PrivateRoute>
+            }
+          />
+        </Routes>
+      </ErrorBoundary>
+    </>
+  );
+}
 
 function App() {
   return (
     <Provider store={store}>
       <BrowserRouter>
         <AlertProvider template={AlertTemplate} {...options}>
-          <Fragment>
-            <Alert />
-            <Navbar />
-            <Notification /> {/* Add Notification component */}
-            <ErrorBoundary>
-              <Routes>
-                <Route exact path="/" element={<Landing />} />
-                <Route exact path="/register" element={<Register />} />
-                <Route exact path="/login" element={<Login />} />
-                <Route
-                  exact
-                  path="/admin/*"
-                  element={
-                    <PrivateRoute role="admin">
-                      <AdminDashboard />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  exact
-                  path="/employee/*"
-                  element={
-                    <PrivateRoute role="employee">
-                      <EmployeeDashboard />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  exact
-                  path="/home"
-                  element={
-                    <PrivateRoute>
-                      <Swapper />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  exact
-                  path="/requester"
-                  element={
-                    <PrivateRoute>
-                      <SwapRequestForm />
-                    </PrivateRoute>
-                  }
-                />
-              </Routes>
-            </ErrorBoundary>
-          </Fragment>
+          <Main />
         </AlertProvider>
       </BrowserRouter>
     </Provider>

@@ -49,70 +49,71 @@ const PreferenceForm = ({ preference = {}, isEdit = false }) => {
   const weekOptions = generateWeekOptions();
 
   return (
-    <div className="manage-leave-main register">
-      <p align="center" className="form-title">
-        Preference Form
-      </p>
-      <form className="form1" onSubmit={handleSubmit}>
-        <select
-          name="preferredShift"
-          value={formData.preferredShift || ""}
-          onChange={handleChange}
-        >
-          <option value="">Preferred Shift</option>
-          <option value="06:00-15:00">06:00-15:00</option>
-          <option value="07:00-16:00">07:00-16:00</option>
-          <option value="08:00-17:00">08:00-17:00</option>
-          <option value="09:00-18:00">09:00-18:00</option>
-          <option value="11:00-20:00">11:00-20:00</option>
-          <option value="13:00-22:00">13:00-22:00</option>
-          <option value="14:00-23:00">14:00-23:00</option>
-        </select>
-        <select
-          name="preferredOffDays"
-          value={formData.preferredOffDays || ""}
-          onChange={handleChange}
-        >
-          <option value="">Preferred Off Days</option>
-          <option value="consecutive">Consecutive</option>
-          <option value="split">Split</option>
-        </select>
-        <select
-                className="input-text"
-                name="OU"
-                value={formData.OU}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Select OU</option>
-                <option value="AE">AE</option>
-                <option value="SA">SA</option>
-                <option value="EG">EG</option>
-                <option value="specialty">Specialty</option>
-              </select>
-        <select
-          name="week"
-          value={formData.week || ""}
-          onChange={handleChange}
-        >
-          <option value="" disabled>Select a week</option>
-          {weekOptions.map((week) => (
-            <option key={week} value={week}>
-              Week {week}
-            </option>
-          ))}
-        </select>
-        <button
-          align="center"
-          className="btn btn-primary"
-         
-          type="submit"
-          disabled={loading}
-        >
-          {isEdit ? "Update" : "Create"}
-        </button>
-        {error && <p>Error: {error}</p>}
-      </form>
+    <div className="manage-leave-main">
+      <div className="form1">
+        <p align="center" className="form-title">
+          Preference Form
+        </p>
+        <form onSubmit={handleSubmit}>
+          <select
+            name="preferredShift"
+            value={formData.preferredShift || ""}
+            onChange={handleChange}
+          >
+            <option value="">Preferred Shift</option>
+            <option value="06:00-15:00">06:00-15:00</option>
+            <option value="07:00-16:00">07:00-16:00</option>
+            <option value="08:00-17:00">08:00-17:00</option>
+            <option value="09:00-18:00">09:00-18:00</option>
+            <option value="11:00-20:00">11:00-20:00</option>
+            <option value="13:00-22:00">13:00-22:00</option>
+            <option value="14:00-23:00">14:00-23:00</option>
+          </select>
+          <select
+            name="preferredOffDays"
+            value={formData.preferredOffDays || ""}
+            onChange={handleChange}
+          >
+            <option value="">Preferred Off Days</option>
+            <option value="consecutive">Consecutive</option>
+            <option value="split">Split</option>
+          </select>
+          <select
+            className="input-text"
+            name="OU"
+            value={formData.OU}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Select OU</option>
+            <option value="AE">AE</option>
+            <option value="SA">SA</option>
+            <option value="EG">EG</option>
+            <option value="specialty">Specialty</option>
+          </select>
+          <select
+            name="week"
+            value={formData.week || ""}
+            onChange={handleChange}
+          >
+            <option value="" disabled>Select a week</option>
+            {weekOptions.map((week) => (
+              <option key={week} value={week}>
+                Week {week}
+              </option>
+            ))}
+          </select>
+          <button
+            align="center"
+            className="btn btn-primary"
+            type="submit"
+            disabled={loading}
+          >
+            {isEdit ? "Update" : "Create"}
+          </button>
+          {error && <p>Error: {error}</p>}
+        </form>
+      </div>
     </div>
   );
 };

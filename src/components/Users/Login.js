@@ -45,7 +45,7 @@ const Login = () => {
       <p align="center" className="form-title">
         Sign In
       </p>
-      <form className="form1" onSubmit={onSubmit}>
+      <form className="form2" onSubmit={onSubmit}>
         <input
           className="input-text"
           type="text"

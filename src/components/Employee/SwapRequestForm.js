@@ -96,8 +96,7 @@ const SwapRequestForm = () => {
 
   return (
     <div className="manage-leave-main">
-      <h2>Create Swap Request</h2>
-
+<h2 className="form-title">Swap Requester</h2>
       {/* Display loading message */}
       {loadingSchedules && <p>Loading schedules...</p>}
       {usersLoading && <p>Loading users...</p>}

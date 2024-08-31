@@ -32,25 +32,30 @@ const SentSwapRequests = () => {
   const formatTime = (dateString) => {
     const date = new Date(dateString);
     const options = {
-      timeZone: 'Asia/Amman',
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false
+      timeZone: "Asia/Amman",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
     };
-    const formatter = new Intl.DateTimeFormat('en-GB', options);
+    const formatter = new Intl.DateTimeFormat("en-GB", options);
     const [
-      { value: day },,
-      { value: month },,
-      { value: year },,
-      { value: hours },,
-      { value: minutes },,
-      { value: seconds }
+      { value: day },
+      ,
+      { value: month },
+      ,
+      { value: year },
+      ,
+      { value: hours },
+      ,
+      { value: minutes },
+      ,
+      { value: seconds },
     ] = formatter.formatToParts(date);
-  
+
     return `${day}-${month}-${year} , ${hours}:${minutes}:${seconds}`;
   };
 
@@ -68,8 +73,7 @@ const SentSwapRequests = () => {
         <table className="swap-table">
           <thead>
             <tr>
-              <th>Sent To</th>
-              <th>Requested Schedule</th>
+              <th>Hidden</th> <th>Requested Schedule</th>
               <th>Creation Date</th>
               <th>Last Update</th>
               <th>Status</th>

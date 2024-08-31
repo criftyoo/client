@@ -1,18 +1,25 @@
 import { Fragment, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { updateOpenForSwap, fetchIsOpenForSwap, logout } from "../../redux/modules/users";
-import socketIOClient from 'socket.io-client';
-import '../../App.css';
+import {
+  updateOpenForSwap,
+  fetchIsOpenForSwap,
+  logout,
+} from "../../redux/modules/users";
+import socketIOClient from "socket.io-client";
 
-const ENDPOINT = 'http://localhost:4000'; // Update this to your server's base URL
+const ENDPOINT = "http://localhost:4000"; // Update this to your server's base URL
 
 const Navbar = () => {
   const dispatch = useDispatch();
   const [toggled, setToggled] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
-  const { user, isAuthenticated, isOpenForSwap: openForSwap } = useSelector((state) => state.users);
+  const {
+    user,
+    isAuthenticated,
+    isOpenForSwap: openForSwap,
+  } = useSelector((state) => state.users);
 
   useEffect(() => {
     // Fetch the initial isOpenForSwap status when the component mounts
@@ -27,16 +34,19 @@ const Navbar = () => {
   useEffect(() => {
     const socket = socketIOClient(ENDPOINT);
 
-    socket.on('connect', () => {
-      console.log('Connected to Socket.IO server');
+    socket.on("connect", () => {
+      console.log("Connected to Socket.IO server");
     });
 
-    socket.on('notification', (notification) => {
-      setNotifications((prevNotifications) => [notification, ...prevNotifications]);
+    socket.on("notification", (notification) => {
+      setNotifications((prevNotifications) => [
+        notification,
+        ...prevNotifications,
+      ]);
     });
 
-    socket.on('disconnect', () => {
-      console.log('Disconnected from Socket.IO server');
+    socket.on("disconnect", () => {
+      console.log("Disconnected from Socket.IO server");
     });
 
     return () => {
@@ -68,7 +78,7 @@ const Navbar = () => {
       </h1>
       <Fragment>
         <ul>
-          {isAuthenticated && user && user.role === 'employee' && (
+          {isAuthenticated && user && user.role === "employee" && (
             <>
               <div style={{ color: "orange" }}>Open For Swap ?</div>
               <button
@@ -81,7 +91,12 @@ const Navbar = () => {
           )}
           <li className="notifications">
             <div onClick={handleNotificationsClick}>
-              Notifications {notifications.length > 0 && <span className="notification-count">{notifications.length}</span>}
+              <i className="fas fa-bell"></i>{" "}
+              {notifications.length > 0 && (
+                <span className="notification-count">
+                  {notifications.length}
+                </span>
+              )}
             </div>
             {showNotifications && (
               <div className="notification-dropdown">
@@ -100,10 +115,15 @@ const Navbar = () => {
           <li>
             {isAuthenticated ? (
               <Link to="/" onClick={handleLogout}>
-                Logout
+                Logout{" "}
+                <i
+                  className="fas fa-sign-out-alt"
+                  style={{ marginLeft: "8px" }}
+                ></i>
               </Link>
             ) : (
               <Link to="/login">Login</Link>
+              
             )}
           </li>
         </ul>

@@ -47,25 +47,27 @@ const UploadSchedule = () => {
   const renderErrorTable = (error) => {
     if (Array.isArray(error)) {
       return (
-        <table className="error-table">
-          <thead>
-            <tr>
-              <th>Username</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {error.map((errorMsg, index) => {
-              const [username, errorText] = errorMsg.split(", ");
-              return (
-                <tr key={index}>
-                  <td>{username}</td>
-                  <td>{errorText}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <div>
+          <table className="error-table">
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {error.map((errorMsg, index) => {
+                const [username, errorText] = errorMsg.split(", ");
+                return (
+                  <tr key={index}>
+                    <td>{username}</td>
+                    <td>{errorText}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       );
     }
 
@@ -73,8 +75,20 @@ const UploadSchedule = () => {
   };
 
   return (
-    <div className="upload-container">
-      <form onSubmit={handleSubmit}>
+    <div className="main upload-container">
+      <div className="description">
+        <h2>Schedule Uploader Instructions</h2>
+        <ul>
+          <li>Select a file to upload by clicking the "Choose File" button.</li>
+          <li>Ensure the file is in the correct format ('.xlsx', '.xls').</li>
+          <li>Click the "Upload" button to start the upload process.</li>
+          <li>Wait for the upload to complete. You will see a progress bar indicating the upload status.</li>
+          <li>If there are any errors, they will be displayed in a table below the form.</li>
+          <li>Once the upload is complete, a success message will be displayed & the schedules will be shared with the employees over email.</li>
+        </ul>
+      </div>
+
+      <form onSubmit={handleSubmit} className="form1">
         <label htmlFor="file-input">
           <input
             id="file-input"

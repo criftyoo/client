@@ -12,7 +12,7 @@ const AdminDashboard = () => {
     <div className='dashboard'>
       <Sidebar />
       <div className='main-content'>
-        <h1 className="main form-title">Admin Dashboard</h1>
+      
         <Routes>
           <Route path="upload-schedule" element={<UploadSchedule />} />
           <Route path="swap-request" element={<AllSwapRequests />} />

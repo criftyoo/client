@@ -143,7 +143,7 @@ const ReceivedSwapRequests = () => {
         <table className="swap-table">
           <thead>
             <tr>
-              <th>Requester</th>
+              <th>Hidden</th>
               <th>Schedule</th>
               <th>Creation Date</th>
               <th>Last Update</th>
@@ -171,13 +171,13 @@ const ReceivedSwapRequests = () => {
                   {swap.status === "pending" ? (
                     <>
                       <button
-                        className="btn btn-primary"
+                        className="custom-btn custom-btn-primary"
                         onClick={() => handleAccept(swap._id)}
                       >
                         Accept
                       </button>
                       <button
-                        className="btn btn-danger"
+                        className="custom-btn custom-btn-danger"
                         onClick={() => handleReject(swap._id)}
                       >
                         Reject

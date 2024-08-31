@@ -37,9 +37,9 @@ const AllPreferences = () => {
     if (!preferences.length) return <p>No preferences found.</p>;
 
     return (
-        <div>
-            <h1>All Preferences</h1>
-            <button onClick={exportToExcel}>Download as Excel</button>
+        <div className='main'>
+            <h2 className='form-title'>Schedule Preferences</h2>
+            <button className='btn-primary' onClick={exportToExcel}>Download as Excel</button>
             <table>
                 <thead>
                     <tr>
