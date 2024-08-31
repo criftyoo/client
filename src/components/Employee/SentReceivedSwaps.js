@@ -5,7 +5,7 @@ import SentSwapRequests from './SentSwapRequests';
 
 const SentReceivedSwaps = () => {
   return (
-    <div className='main'>
+    <div className='manage-leave-main'>
       <ReceivedSwapRequests />
       <SentSwapRequests />
     </div>

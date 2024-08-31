@@ -137,7 +137,7 @@ const ReceivedSwapRequests = () => {
   }
 
   return (
-    <div className="main">
+    <div className="manage-leave-main">
       <h2 className="form-title">Received Swap Requests</h2>
       {transformedSwaps.length > 0 ? (
         <table className="swap-table">

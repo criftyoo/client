@@ -62,7 +62,7 @@ const SentSwapRequests = () => {
   });
 
   return (
-    <div className="main">
+    <div className="manage-leave-main">
       <h2 className="form-title">Sent Swap Requests</h2>
       {sortedSwaps.length > 0 ? (
         <table className="swap-table">

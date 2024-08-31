@@ -30,8 +30,26 @@ const PreferenceForm = ({ preference = {}, isEdit = false }) => {
     }
   };
 
+  const getCurrentWeekNumber = () => {
+    const currentDate = new Date();
+    const startDate = new Date(currentDate.getFullYear(), 0, 1);
+    const days = Math.floor((currentDate - startDate) / (24 * 60 * 60 * 1000));
+    return Math.ceil((currentDate.getDay() + 1 + days) / 7);
+  };
+
+  const generateWeekOptions = () => {
+    const currentWeek = getCurrentWeekNumber();
+    const weeks = [];
+    for (let i = 1; i <= 10; i++) {
+      weeks.push(currentWeek + i);
+    }
+    return weeks;
+  };
+
+  const weekOptions = generateWeekOptions();
+
   return (
-    <div className="main register">
+    <div className="manage-leave-main register">
       <p align="center" className="form-title">
         Preference Form
       </p>
@@ -59,16 +77,35 @@ const PreferenceForm = ({ preference = {}, isEdit = false }) => {
           <option value="consecutive">Consecutive</option>
           <option value="split">Split</option>
         </select>
-        <input
-          type="text"
+        <select
+                className="input-text"
+                name="OU"
+                value={formData.OU}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select OU</option>
+                <option value="AE">AE</option>
+                <option value="SA">SA</option>
+                <option value="EG">EG</option>
+                <option value="specialty">Specialty</option>
+              </select>
+        <select
           name="week"
           value={formData.week || ""}
           onChange={handleChange}
-          placeholder="Week"
-        />
+        >
+          <option value="" disabled>Select a week</option>
+          {weekOptions.map((week) => (
+            <option key={week} value={week}>
+              Week {week}
+            </option>
+          ))}
+        </select>
         <button
           align="center"
           className="btn btn-primary"
+         
           type="submit"
           disabled={loading}
         >
