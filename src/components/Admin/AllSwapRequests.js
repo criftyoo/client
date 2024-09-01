@@ -125,7 +125,7 @@ const AllSwapRequests = () => {
 
   return (
     <div className="main">
-      <h2 className="form-title">All Swaps</h2>
+      <h2 className="form-title">Swap Requests</h2>
       <input
         type="text"
         placeholder="Search by username, working hours, off days, or week..."
@@ -133,7 +133,8 @@ const AllSwapRequests = () => {
         onChange={handleSearch}
         className="search-input"
       />
-      <button onClick={exportToExcel}>Download as Excel</button>
+      <button className="btn-primary"
+        onClick={exportToExcel}>Download as Excel</button>
       {actionError && <div className="error">{actionError}</div>}
       <table>
         <thead>

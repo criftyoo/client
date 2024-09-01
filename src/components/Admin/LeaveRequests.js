@@ -52,8 +52,8 @@ const LeaveRequests = () => {
             <th>User</th>
             <th>Reason</th>
             <th>Creation Date</th>
+            <th>Last Update</th>
             <th>Status</th>
-            <th>Creation Date</th>
             <th>Actions</th>
           </tr>
         </thead>

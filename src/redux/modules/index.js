@@ -5,6 +5,7 @@ import admin from "./admin";
 import employee from "./employee";
 import preferences from "./preferences";
 import leaves from "./leaves";
+import prodcasts from "./prodcasts";
 
 const rootReducer = combineReducers({
   users,
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
   employee,
   preferences,
   leaves,
+  prodcasts,
 });
 
 export default rootReducer;

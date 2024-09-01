@@ -78,7 +78,7 @@ const AllSchedules = () => {
 
   return (
     <div className="main">
-      <h2 className="form-title">All Schedules</h2>
+      <h2 className="form-title">Schedules History</h2>
       <input
         type="text"
         placeholder="Search by username, working hours, off days, or week..."
@@ -87,7 +87,8 @@ const AllSchedules = () => {
         className="search-input"
         aria-label="Search schedules"
       />
-      <button onClick={exportToExcel}>Download as Excel</button>
+      <button         className="btn-primary"
+ onClick={exportToExcel}>Download as Excel</button>
       {filteredSchedules.length > 0 ? (
         <table className="schedule-table">
           <thead>

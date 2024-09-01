@@ -278,6 +278,19 @@ body {
     background-position: 0 0;
   }
 }
+/* Error message styles */
+.error-message {
+  color: red;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+/* Success message styles */
+.success-message {
+  color: green;
+  font-weight: bold;
+  margin-top: 20px;
+}
 
 .loading-message, .error-message {
   text-align: center;

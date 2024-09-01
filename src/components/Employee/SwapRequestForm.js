@@ -40,7 +40,7 @@ const SwapRequestForm = () => {
     );
 
     if (!requesterSchedule) {
-      setFormError("Requester schedule not found.");
+      setFormError("You have no active schedules to swap.");
       return;
     }
 
@@ -96,7 +96,7 @@ const SwapRequestForm = () => {
 
   return (
     <div className="manage-leave-main">
-<h2 className="form-title">Swap Requester</h2>
+      <h2 className="form-title">Swap Requester</h2>
       {/* Display loading message */}
       {loadingSchedules && <p>Loading schedules...</p>}
       {usersLoading && <p>Loading users...</p>}
@@ -104,7 +104,6 @@ const SwapRequestForm = () => {
       {/* Display error message and form */}
       {!loadingSchedules && !usersLoading && schedules && user && (
         <>
-          {formError && <p>Error: {formError}</p>}
           <form onSubmit={handleSubmit}>
             <label>Select a schedule:</label>
 
@@ -137,8 +136,9 @@ const SwapRequestForm = () => {
         </>
       )}
 
-      {/* Show success message when swap request is created */}
-      {swapRequest && <p>Swap Request Sent To The User Successfully!</p>}
+      {/* Show error or success message */}
+      {formError && <p className="error-message">Error: {formError}</p>}
+      {swapRequest && <p className="success-message">Swap Request Sent To The User Successfully!</p>}
     </div>
   );
 };
