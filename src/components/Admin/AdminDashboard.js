@@ -1,12 +1,12 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import UploadSchedule from '../Admin/UploadSchedule';
+import UploadSchedule from './UploadSchedule';
 import AllSchedules from './AllSchedules';
 import Sidebar from '../common/Sidebar';
 import AllSwapRequests from './AllSwapRequests';
 import AllPreferences from './AllPreferences';
 import LeaveRequests from './LeaveRequests';
-import AdminProdcastManager from './AdminProdcastManager'; // Import the AdminProdcastManager component
+import AdminNewsPage from './AdminNewsPage'; // Import AdminNewsPage
 
 const AdminDashboard = () => {
   return (
@@ -19,7 +19,7 @@ const AdminDashboard = () => {
           <Route path="all-schedules" element={<AllSchedules />} />
           <Route path="all-preferences" element={<AllPreferences />} />
           <Route path="leave-requests" element={<LeaveRequests />} />
-          <Route path="prodcast-manager" element={<AdminProdcastManager />} /> {/* Add the route for AdminProdcastManager */}
+          <Route path="BreakingNews-manager" element={<AdminNewsPage />} /> {/* Update route to use AdminNewsPage */}
         </Routes>
       </div>
     </div>

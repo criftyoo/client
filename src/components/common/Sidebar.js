@@ -28,7 +28,7 @@ const Sidebar = () => {
             <li><Link to="all-schedules"><span className="bx">&#128198;</span>{isExpanded && 'View Schedules'}</Link></li>
             <li><Link to="all-preferences"><span className="bx">&#128221;</span>{isExpanded && 'View Preferences'}</Link></li>
             <li><Link to="leave-requests"><span className="bx">&#128100;</span>{isExpanded && 'Leave Requests'}</Link></li>
-            <li><Link to="prodcast-manager"><span className="bx">&#128214;</span>{isExpanded && 'Manage Prodcasts'}</Link></li> {/* New link for AdminProdcastManager */}
+            <li><Link to="BreakingNews-manager"><span className="bx">&#128214;</span>{isExpanded && 'Manage News'}</Link></li> {/* New link for AdminBreakingNewsManager */}
           </>
         )}
         {userRole === 'employee' && (
@@ -37,7 +37,7 @@ const Sidebar = () => {
             <li><Link to="employee-swap-requests"><span className="bx">&#128198;</span>{isExpanded && 'Swap Manager'}</Link></li>
             <li><Link to="preferences"><span className="bx">&#128221;</span>{isExpanded && 'Preferences'}</Link></li>
             <li><Link to="employee-leave-requests"><span className="bx">&#128100;</span>{isExpanded && 'Leave Requests'}</Link></li>
-            <li><Link to="prodcasts"><span className="bx">&#128214;</span>{isExpanded && 'View Prodcasts'}</Link></li> {/* New link for ClientProdcastViewer */}
+            <li><Link to="BreakingNews"><span className="bx">&#128214;</span>{isExpanded && 'View News'}</Link></li> {/* New link for ClientBreakingNewsViewer */}
           </>
         )}
       </ul>

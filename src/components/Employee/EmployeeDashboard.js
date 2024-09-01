@@ -5,7 +5,7 @@ import SwapRequestForm from './SwapRequestForm';
 import SentReceivedSwaps from './SentReceivedSwaps';
 import PreferenceForm from './PreferenceForm';
 import ManageLeaveRequests from './ManageLeaveRequests';
-import ClientProdcastViewer from './ClientProdcastViewer'; // Import the ClientProdcastViewer component
+import NewsListClient from './NewsListClient'; // Import NewsListClient
 
 const EmployeeDashboard = () => {
   return (
@@ -17,8 +17,7 @@ const EmployeeDashboard = () => {
           <Route path="employee-swap-requests" element={<SentReceivedSwaps />} />
           <Route path="preferences" element={<PreferenceForm />} />
           <Route path="employee-leave-requests" element={<ManageLeaveRequests />} />
-          <Route path="prodcasts" element={<ClientProdcastViewer />} /> {/* Add the route for ClientProdcastViewer */}
-          <Route path="prodcast/:id" element={<ClientProdcastViewer />} /> {/* Add the route for viewing a single prodcast */}
+          <Route path="BreakingNews" element={<NewsListClient />} /> {/* Add route for NewsListClient */}
         </Routes>
       </div>
     </div>

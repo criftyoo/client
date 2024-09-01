@@ -1,6 +1,130 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
 
 
+/*NewsListAdmin*/
+.news-list-admin {
+  padding: 20px;
+}
+
+.news-list-admin h2 {
+  margin-bottom: 20px;
+}
+
+.news-list-admin ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.news-list-admin .news-item {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.news-list-admin .btn-delete {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  margin-right: 5px;
+}
+
+.news-list-admin .btn-edit {
+  background-color: blue;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+}
+/*NewsListAdmin*/
+
+/*NewsFormAdmin*/
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 600px;
+  box-sizing: border-box;
+}
+
+.btn-close {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.btn-close:hover {
+  background-color: #d32f2f;
+}
+
+.open-modal-btn {
+  background-color: #1877f2;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 100px; /* Move the button 100px from the top */
+}
+
+.open-modal-btn:hover {
+  background-color: #165dbb;
+}
+/*NewsFormAdmin*/
+
+/*NewsListClient*/
+
+.news-list-client {
+  padding: 20px;
+  margin: 0 250px; /* Add 50px margin on both left and right sides */
+}
+
+.news-list-client h2 {
+  margin-bottom: 20px;
+}
+
+.news-list-client ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.news-list-client .news-item {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+/* AdminNewsPage */
+.admin-news-page {
+  padding: 20px;
+  margin: 0 250px; /* Add 50px margin on both left and right sides */
+}
+
+.admin-news-page .news-form-admin {
+  margin-bottom: 20px;
+}
+
+/* AdminNewsPage*/
 
 
 /* Admin Dashboard Styles */
