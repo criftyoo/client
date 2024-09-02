@@ -95,7 +95,7 @@ const SwapRequestForm = () => {
   }, [selectedScheduleId, dispatch]);
 
   return (
-    <div className="manage-leave-main">
+    <div className="main manage-leave-main">
       <h2 className="form-title">Swap Requester</h2>
       {/* Display loading message */}
       {loadingSchedules && <p>Loading schedules...</p>}

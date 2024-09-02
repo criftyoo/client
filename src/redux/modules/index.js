@@ -6,6 +6,8 @@ import employee from "./employee";
 import preferences from "./preferences";
 import leaves from "./leaves";
 import news from "./news";
+import reportIssues from "./reportIssues";
+
 const rootReducer = combineReducers({
   users,
   alerts,
@@ -14,6 +16,7 @@ const rootReducer = combineReducers({
   preferences,
   leaves,
   news,
+  reportIssues,
 });
 
 export default rootReducer;

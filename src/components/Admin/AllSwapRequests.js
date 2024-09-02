@@ -1,7 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSwaps, updateSwapStatus } from '../../redux/modules/admin';
 import * as XLSX from 'xlsx';
+
+const SelectFilter = ({ value, onChange, options }) => (
+  <select value={value} onChange={onChange} className="small-select">
+    <option value="">All</option>
+    {options.map((option, index) => (
+      <option key={`${option}-${index}`} value={option}>
+        {option}
+      </option>
+    ))}
+  </select>
+);
 
 const AllSwapRequests = () => {
   const dispatch = useDispatch();
@@ -16,7 +27,6 @@ const AllSwapRequests = () => {
   const [recipientScheduleFilter, setRecipientScheduleFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [approvalFilter, setApprovalFilter] = useState('');
-  const [updatedSwaps, setUpdatedSwaps] = useState([]);
   const [actionError, setActionError] = useState(null);
 
   useEffect(() => {
@@ -30,11 +40,7 @@ const AllSwapRequests = () => {
     fetchData();
   }, [dispatch]);
 
-  useEffect(() => {
-    setUpdatedSwaps(swaps);
-  }, [swaps]);
-
-  const getUniqueValues = (key) => {
+  const getUniqueValues = useCallback((key) => {
     const values = swaps.map((swap) => {
       const keys = key.split('.');
       let value = swap;
@@ -44,28 +50,24 @@ const AllSwapRequests = () => {
       return value || 'N/A';
     });
     return [...new Set(values)];
-  };
+  }, [swaps]);
+
+  const uniqueRequesterUsernames = useMemo(() => getUniqueValues('requester.username'), [getUniqueValues]);
+  const uniqueRecipientUsernames = useMemo(() => getUniqueValues('recipient.username'), [getUniqueValues]);
+  const uniqueRequesterSchedules = useMemo(() => getUniqueValues('requesterSchedule.workingHours'), [getUniqueValues]);
+  const uniqueRequesterWeeks = useMemo(() => getUniqueValues('requesterSchedule.week'), [getUniqueValues]);
+  const uniqueRecipientSchedules = useMemo(() => getUniqueValues('recipientSchedule.workingHours'), [getUniqueValues]);
+  const uniqueRecipientWeeks = useMemo(() => getUniqueValues('recipientSchedule.week'), [getUniqueValues]);
+  const uniqueStatuses = useMemo(() => getUniqueValues('status'), [getUniqueValues]);
+  const uniqueApprovals = useMemo(() => getUniqueValues('adminApproval'), [getUniqueValues]);
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error fetching swaps: {error}</div>;
-  }
-
   const handleAccept = async (id) => {
     try {
       await dispatch(updateSwapStatus(id, 'approved', 'Swap has been approved by the WFM', 'admin', 'approved'));
-      setUpdatedSwaps((prevSwaps) =>
-        prevSwaps.map((swap) =>
-          swap._id === id ? { ...swap, status: 'accepted', adminApproval: 'accepted' } : swap
-        )
-      );
     } catch (err) {
       setActionError('Error approving swap');
       console.error('Error approving swap:', err);
@@ -75,39 +77,35 @@ const AllSwapRequests = () => {
   const handleReject = async (id) => {
     try {
       await dispatch(updateSwapStatus(id, 'declined', 'Swap has been rejected by the WFM', 'admin', 'declined'));
-      setUpdatedSwaps((prevSwaps) =>
-        prevSwaps.map((swap) =>
-          swap._id === id ? { ...swap, status: 'rejected', adminApproval: 'rejected' } : swap
-        )
-      );
     } catch (err) {
       setActionError('Error rejecting swap');
       console.error('Error rejecting swap:', err);
     }
   };
 
-  const searchQueryLower = searchQuery.toLowerCase();
+  const filteredSwaps = useMemo(() => {
+    const searchQueryLower = searchQuery.toLowerCase();
+    return swaps.filter((swap) => {
+      const requesterSchedule = `${swap.requesterSchedule.workingHours} (Week ${swap.requesterSchedule.week})`;
+      const recipientSchedule = `${swap.recipientSchedule.workingHours} (Week ${swap.recipientSchedule.week})`;
 
-  const filteredSwaps = updatedSwaps.filter((swap) => {
-    const requesterSchedule = `${swap.requesterSchedule.workingHours} (Week ${swap.requesterSchedule.week})`;
-    const recipientSchedule = `${swap.recipientSchedule.workingHours} (Week ${swap.recipientSchedule.week})`;
-
-    return (
-      swap.status !== 'pending' &&
-      (swap.requester?.username?.toLowerCase().includes(searchQueryLower) ||
-        swap.recipient?.username?.toLowerCase().includes(searchQueryLower) ||
-        requesterSchedule.toLowerCase().includes(searchQueryLower) ||
-        recipientSchedule.toLowerCase().includes(searchQueryLower) ||
-        swap.status?.toLowerCase().includes(searchQueryLower) ||
-        swap.adminApproval?.toLowerCase().includes(searchQueryLower)) &&
-      (requesterFilter === '' || swap.requester?.username === requesterFilter) &&
-      (recipientFilter === '' || swap.recipient?.username === recipientFilter) &&
-      (requesterScheduleFilter === '' || requesterSchedule === requesterScheduleFilter) &&
-      (recipientScheduleFilter === '' || recipientSchedule === recipientScheduleFilter) &&
-      (statusFilter === '' || swap.status === statusFilter) &&
-      (approvalFilter === '' || swap.adminApproval === approvalFilter)
-    );
-  });
+      return (
+        swap.status !== 'pending' &&
+        (swap.requester?.username?.toLowerCase().includes(searchQueryLower) ||
+          swap.recipient?.username?.toLowerCase().includes(searchQueryLower) ||
+          requesterSchedule.toLowerCase().includes(searchQueryLower) ||
+          recipientSchedule.toLowerCase().includes(searchQueryLower) ||
+          swap.status?.toLowerCase().includes(searchQueryLower) ||
+          swap.adminApproval?.toLowerCase().includes(searchQueryLower)) &&
+        (requesterFilter === '' || swap.requester?.username === requesterFilter) &&
+        (recipientFilter === '' || swap.recipient?.username === recipientFilter) &&
+        (requesterScheduleFilter === '' || requesterSchedule === requesterScheduleFilter) &&
+        (recipientScheduleFilter === '' || recipientSchedule === recipientScheduleFilter) &&
+        (statusFilter === '' || swap.status === statusFilter) &&
+        (approvalFilter === '' || swap.adminApproval === approvalFilter)
+      );
+    });
+  }, [swaps, searchQuery, requesterFilter, recipientFilter, requesterScheduleFilter, recipientScheduleFilter, statusFilter, approvalFilter]);
 
   const exportToExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(filteredSwaps.map(swap => ({
@@ -123,6 +121,14 @@ const AllSwapRequests = () => {
     XLSX.writeFile(workbook, 'FilteredSwaps.xlsx');
   };
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error fetching swaps: {error}</div>;
+  }
+
   return (
     <div className="main">
       <h2 className="form-title">Swap Requests</h2>
@@ -133,105 +139,34 @@ const AllSwapRequests = () => {
         onChange={handleSearch}
         className="search-input"
       />
-      <button className="btn-primary"
-        onClick={exportToExcel}>Download as Excel</button>
+      <button className="btn-primary" onClick={exportToExcel}>Download as Excel</button>
       {actionError && <div className="error">{actionError}</div>}
       <table>
         <thead>
           <tr>
             <th>
               Requester
-              <select
-                value={requesterFilter}
-                onChange={(e) => setRequesterFilter(e.target.value)}
-              >
-                <option value="">All</option>
-                {getUniqueValues('requester.username').map((value, index) => (
-                  <option key={`${value}-${index}`} value={value}>
-                    {value}
-                  </option>
-                ))}
-              </select>
+              <SelectFilter value={requesterFilter} onChange={(e) => setRequesterFilter(e.target.value)} options={uniqueRequesterUsernames} />
             </th>
             <th>
               Recipient
-              <select
-                value={recipientFilter}
-                onChange={(e) => setRecipientFilter(e.target.value)}
-              >
-                <option value="">All</option>
-                {getUniqueValues('recipient.username').map((value, index) => (
-                  <option key={`${value}-${index}`} value={value}>
-                    {value}
-                  </option>
-                ))}
-              </select>
+              <SelectFilter value={recipientFilter} onChange={(e) => setRecipientFilter(e.target.value)} options={uniqueRecipientUsernames} />
             </th>
             <th>
               Requester Schedule
-              <select
-                value={requesterScheduleFilter}
-                onChange={(e) => setRequesterScheduleFilter(e.target.value)}
-              >
-                <option value="">All</option>
-                {getUniqueValues('requesterSchedule.workingHours').map((value, index) => (
-                  <option key={`${value}-${index}`} value={value}>
-                    {value}
-                  </option>
-                ))}
-                {getUniqueValues('requesterSchedule.week').map((value, index) => (
-                  <option key={`Week ${value}-${index}`} value={`Week ${value}`}>
-                    Week {value}
-                  </option>
-                ))}
-              </select>
+              <SelectFilter value={requesterScheduleFilter} onChange={(e) => setRequesterScheduleFilter(e.target.value)} options={uniqueRequesterSchedules} />
             </th>
             <th>
               Recipient Schedule
-              <select
-                value={recipientScheduleFilter}
-                onChange={(e) => setRecipientScheduleFilter(e.target.value)}
-              >
-                <option value="">All</option>
-                {getUniqueValues('recipientSchedule.workingHours').map((value, index) => (
-                  <option key={`${value}-${index}`} value={value}>
-                    {value}
-                  </option>
-                ))}
-                {getUniqueValues('recipientSchedule.week').map((value, index) => (
-                  <option key={`Week ${value}-${index}`} value={`Week ${value}`}>
-                    Week {value}
-                  </option>
-                ))}
-              </select>
+              <SelectFilter value={recipientScheduleFilter} onChange={(e) => setRecipientScheduleFilter(e.target.value)} options={uniqueRecipientSchedules} />
             </th>
             <th>
               Status
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-              >
-                <option value="">All</option>
-                {getUniqueValues('status').map((value, index) => (
-                  <option key={`${value}-${index}`} value={value}>
-                    {value}
-                  </option>
-                ))}
-              </select>
+              <SelectFilter value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} options={uniqueStatuses} />
             </th>
             <th>
               Approval
-              <select
-                value={approvalFilter}
-                onChange={(e) => setApprovalFilter(e.target.value)}
-              >
-                <option value="">All</option>
-                {getUniqueValues('adminApproval').map((value, index) => (
-                  <option key={`${value}-${index}`} value={value}>
-                    {value}
-                  </option>
-                ))}
-              </select>
+              <SelectFilter value={approvalFilter} onChange={(e) => setApprovalFilter(e.target.value)} options={uniqueApprovals} />
             </th>
           </tr>
         </thead>

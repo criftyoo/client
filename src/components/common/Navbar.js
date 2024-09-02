@@ -7,6 +7,9 @@ import {
   logout,
 } from "../../redux/modules/users";
 import socketIOClient from "socket.io-client";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+import ClientReportForm from '../Employee/ReportIssuesForm';
 
 const ENDPOINT = "http://localhost:4000"; // Update this to your server's base URL
 
@@ -15,6 +18,7 @@ const Navbar = () => {
   const [toggled, setToggled] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showForm, setShowForm] = useState(false); // State to manage form visibility
   const {
     user,
     isAuthenticated,
@@ -69,6 +73,10 @@ const Navbar = () => {
     setShowNotifications(!showNotifications);
   };
 
+  const toggleForm = () => {
+    setShowForm(!showForm);
+  };
+
   return (
     <nav className="navbar bg-navbar">
       <h1>
@@ -80,38 +88,57 @@ const Navbar = () => {
         <ul>
           {isAuthenticated && user && user.role === "employee" && (
             <>
-              <div style={{ color: "orange" }}>Open For Swap ?</div>
-              <button
-                className={`toggle-btn ${toggled ? "toggled" : ""}`}
-                onClick={handleToggleClick}
-              >
-                <div className="thumb"></div>
-              </button>
+              <li>
+                Report an issue{" "}
+                <FontAwesomeIcon
+
+                  icon={faExclamationCircle}
+                  onClick={toggleForm}
+                  className="report-icon"
+                />
+                {showForm && (
+                  <div className="popup-form">
+
+                    <ClientReportForm />
+                  </div>
+                )}
+              </li>
+              <li className="notifications">
+                <div onClick={handleNotificationsClick}>
+                  <i className="fas fa-bell"></i>{" "}
+                  {notifications.length > 0 && (
+                    <span className="notification-count">
+                      {notifications.length}
+                    </span>
+                  )}
+                </div>
+                {showNotifications && (
+                  <div className="notification-dropdown">
+                    {notifications.length === 0 ? (
+                      <div className="notification-item">No new notifications</div>
+                    ) : (
+                      notifications.map((notification, index) => (
+                        <div key={index} className="notification-item">
+                          {notification.message}
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+              </li>
+              <li>
+                <button
+                  className={`toggle-btn ${toggled ? "toggled" : ""}`}
+                  onClick={handleToggleClick}
+                >
+                  <div className="thumb"></div>
+                </button>
+              </li>
+              <li>
+                <div style={{ color: "orange" }}>Open For Swap ?</div>
+              </li>
             </>
           )}
-          <li className="notifications">
-            <div onClick={handleNotificationsClick}>
-              <i className="fas fa-bell"></i>{" "}
-              {notifications.length > 0 && (
-                <span className="notification-count">
-                  {notifications.length}
-                </span>
-              )}
-            </div>
-            {showNotifications && (
-              <div className="notification-dropdown">
-                {notifications.length === 0 ? (
-                  <div className="notification-item">No new notifications</div>
-                ) : (
-                  notifications.map((notification, index) => (
-                    <div key={index} className="notification-item">
-                      {notification.message}
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
-          </li>
           <li>
             {isAuthenticated ? (
               <Link to="/" onClick={handleLogout}>
@@ -123,7 +150,6 @@ const Navbar = () => {
               </Link>
             ) : (
               <Link to="/login">Login</Link>
-              
             )}
           </li>
         </ul>

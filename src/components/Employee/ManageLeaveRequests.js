@@ -105,7 +105,7 @@ const ManageLeaveRequests = () => {
   console.log('Leave requests:', leaveRequests);
 
   return (
-    <div className="manage-leave-main">
+    <div className="main manage-leave-main">
       <h2 className="manage-leave-form-title">Manage Leave Requests</h2>
       <button className="manage-leave-btn manage-leave-btn-primary" onClick={handleCreateNew}>Create New Leave Request</button>
       {isFormVisible && (

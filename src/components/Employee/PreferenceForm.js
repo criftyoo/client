@@ -7,6 +7,7 @@ import {
 
 const PreferenceForm = ({ preference = {}, isEdit = false }) => {
   const [formData, setFormData] = useState(preference);
+  const [submissionStatus, setSubmissionStatus] = useState(null); // State for submission feedback
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.preferences);
   const user = useSelector((state) => state.users.user);
@@ -24,9 +25,13 @@ const PreferenceForm = ({ preference = {}, isEdit = false }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (isEdit) {
-      dispatch(updatePreference(preference.id, formData));
+      dispatch(updatePreference(preference.id, formData))
+        .then(() => setSubmissionStatus("Preference updated successfully!"))
+        .catch(() => setSubmissionStatus("Failed to update preference."));
     } else {
-      dispatch(createPreference(formData));
+      dispatch(createPreference(formData))
+        .then(() => setSubmissionStatus("Preference created successfully!"))
+        .catch(() => setSubmissionStatus("Failed to create preference."));
     }
   };
 
@@ -49,7 +54,7 @@ const PreferenceForm = ({ preference = {}, isEdit = false }) => {
   const weekOptions = generateWeekOptions();
 
   return (
-    <div className="manage-leave-main">
+    <div className="main manage-leave-main">
       <div className="form1">
         <p align="center" className="form-title">
           Preference Form
@@ -112,6 +117,7 @@ const PreferenceForm = ({ preference = {}, isEdit = false }) => {
             {isEdit ? "Update" : "Create"}
           </button>
           {error && <p>Error: {error}</p>}
+          {submissionStatus && <p>{submissionStatus}</p>} {/* Display submission feedback */}
         </form>
       </div>
     </div>

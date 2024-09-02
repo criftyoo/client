@@ -21,7 +21,7 @@ import PrivateRoute from "./components/common/PrivateRoute";
 import Notification from "./components/common/Notification"; // Import Notification component
 
 const options = {
-  position: positions.TOP_RIGHT,
+  position: positions.BOTTOM_RIGHT,
   timeout: 5000,
   offset: "30px",
   transition: transitions.SCALE,

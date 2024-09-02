@@ -37,7 +37,7 @@ const NewsForm = ({ existingNews }) => {
 
   return (
     <div>
-      <button onClick={() => setIsModalOpen(true)} className={styles.openModalBtn}>
+      <button  onClick={() => setIsModalOpen(true)} >
         {existingNews ? "Edit News" : "Create News"}
       </button>
 

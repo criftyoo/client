@@ -1,5 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
 
+/* filter small All */
+.small-select {
+  width: auto;
+  min-width: 50px; /* Adjust the width as needed */
+  padding: 2px 5px; /* Adjust padding for better fit */
+}
 
 /*NewsListAdmin*/
 .news-list-admin {
@@ -1103,6 +1109,7 @@ small {
 }
 
 /* Ensure the navbar has a higher z-index */
+/* Navbar Styles */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -1117,23 +1124,6 @@ small {
   background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
   color: var(--white-color);
   height: 60px; /* Set a fixed height for the navbar */
-}
-
-/* Adjust the alert positioning */
-.react-alert {
-  position: fixed;
-  top: 60px; /* Adjust this value based on the height of your navbar */
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1100; /* Ensure the alert is above the navbar */
-  width: 90%; /* Adjust width as needed */
-  max-width: 600px; /* Optional: set a max-width */
-  padding: 15px;
-  background-color: #f8d7da; /* Example background color */
-  color: #721c24; /* Example text color */
-  border: 1px solid #f5c6cb; /* Example border color */
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional: add a shadow */
 }
 
 .navbar h1 {
@@ -1162,6 +1152,65 @@ small {
 
 .navbar a:hover {
   opacity: 0.8;
+}
+
+/* Popup Form Styles */
+.popup-form {
+  position: absolute;
+  top: 60px; /* Adjust based on the height of the navbar */
+  right: 10px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  width: 300px; /* Adjust width as needed */
+}
+
+.popup-form form {
+  display: flex;
+  flex-direction: column;
+}
+
+.popup-form form div {
+  margin-bottom: 10px;
+}
+
+.popup-form form label {
+  margin-bottom: 5px;
+}
+
+.popup-form form input,
+.popup-form form textarea {
+  padding-top: 70px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.popup-form form button {
+  
+  padding: 10px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  
+}
+
+.popup-form form button:hover {
+  background-color: #0056b3;
+}
+
+/* FontAwesome Icon Styles */
+.navbar .navbar-icons {
+  cursor: pointer;
+}
+
+.navbar .report-icon {
+  font-size: 1.5em;
+  color: white;
+  cursor: pointer
 }
 .toggle-btn {
   background-color: #b7b9ba;
