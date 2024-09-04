@@ -72,7 +72,7 @@ export const uploadSchedule = (formData) => async (dispatch) => {
 };
 
 // Fetch All Schedules Action
-export const fetchAllSchedules = () => async (dispatch) => {
+export const fetchSchedules = () => async (dispatch) => {
   try {
     dispatch({ type: FETCH_ALL_SCHEDULES_REQUEST });
     const { data } = await api.get("/schedules/all");
@@ -105,9 +105,10 @@ export const fetchSwaps = () => async (dispatch) => {
     const { data } = await api.get("/swap/swaps");
     dispatch({ type: FETCH_ALL_SWAPS_SUCCESS, payload: data });
   } catch (error) {
+    const errorMessage = error.response?.data?.message || error.message;
     dispatch({
       type: FETCH_ALL_SWAPS_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: errorMessage,
     });
   }
 };
@@ -156,7 +157,7 @@ export const updateSwapStatus = (swapId, status, message, role, adminStatus) => 
     });
 
     dispatch({ type: UPDATE_SWAP_STATUS_SUCCESS, payload: data });
-    dispatch(fetchAllSchedules()); 
+    dispatch(fetchSchedules()); 
   } catch (error) {
     dispatch({
       type: UPDATE_SWAP_STATUS_FAIL,
@@ -229,20 +230,20 @@ export default function reducer(state = initialState, action) {
     case UPLOAD_SCHEDULE_REQUEST:
       return { ...state, loading: { ...state.loading, upload: true } };
     case UPLOAD_SCHEDULE_PROGRESS:
-      return { ...state, uploadProgress: action.payload }; // Handling progress
+      return { ...state, uploadProgress: action.payload };
     case UPLOAD_SCHEDULE_SUCCESS:
       return {
         ...state,
         loading: { ...state.loading, upload: false },
         schedules: action.payload,
-        uploadProgress: 0, // Reset progress after completion
+        uploadProgress: 0,
       };
     case UPLOAD_SCHEDULE_FAIL:
       return {
         ...state,
         loading: { ...state.loading, upload: false },
         error: action.payload,
-        uploadProgress: 0, // Reset progress on failure
+        uploadProgress: 0,
       };
 
     case FETCH_ALL_SCHEDULES_REQUEST:
@@ -261,40 +262,47 @@ export default function reducer(state = initialState, action) {
       };
 
     case FETCH_ALL_SWAPS_REQUEST:
-    case FETCH_RECEIVED_SWAPS_REQUEST:
-    case FETCH_SENT_SWAPS_REQUEST:
       return { ...state, loading: { ...state.loading, allSwaps: true } };
-
     case FETCH_ALL_SWAPS_SUCCESS:
       return {
         ...state,
         loading: { ...state.loading, allSwaps: false },
         swaps: { ...state.swaps, all: action.payload },
       };
+    case FETCH_ALL_SWAPS_FAIL:
+      return {
+        ...state,
+        loading: { ...state.loading, allSwaps: false },
+        error: action.payload,
+      };
+
+    case FETCH_RECEIVED_SWAPS_REQUEST:
+      return { ...state, loading: { ...state.loading, receivedSwaps: true } };
     case FETCH_RECEIVED_SWAPS_SUCCESS:
       return {
         ...state,
         loading: { ...state.loading, receivedSwaps: false },
         swaps: { ...state.swaps, received: action.payload },
       };
+    case FETCH_RECEIVED_SWAPS_FAIL:
+      return {
+        ...state,
+        loading: { ...state.loading, receivedSwaps: false },
+        error: action.payload,
+      };
+
+    case FETCH_SENT_SWAPS_REQUEST:
+      return { ...state, loading: { ...state.loading, sentSwaps: true } };
     case FETCH_SENT_SWAPS_SUCCESS:
       return {
         ...state,
         loading: { ...state.loading, sentSwaps: false },
         swaps: { ...state.swaps, sent: action.payload },
       };
-
-    case FETCH_ALL_SWAPS_FAIL:
-    case FETCH_RECEIVED_SWAPS_FAIL:
     case FETCH_SENT_SWAPS_FAIL:
       return {
         ...state,
-        loading: {
-          ...state.loading,
-          allSwaps: false,
-          receivedSwaps: false,
-          sentSwaps: false,
-        },
+        loading: { ...state.loading, sentSwaps: false },
         error: action.payload,
       };
 
@@ -339,7 +347,6 @@ export default function reducer(state = initialState, action) {
         error: action.payload,
       };
 
-    // Handling approved swap requests
     case FETCH_APPROVED_SWAP_REQUESTS_REQUEST:
       return { ...state, loading: { ...state.loading, approvedSwaps: true } };
     case FETCH_APPROVED_SWAP_REQUESTS_SUCCESS:
@@ -355,10 +362,7 @@ export default function reducer(state = initialState, action) {
         error: action.payload,
       };
 
-    // Handle clearing upload error
     case CLEAR_UPLOAD_ERROR:
-      
-
       return {
         ...state,
         error: null,

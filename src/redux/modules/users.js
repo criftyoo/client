@@ -22,7 +22,7 @@ export const fetchUsersFailure = (error) => ({ type: FETCH_USERS_FAILURE, payloa
 
 // Thunk Action to fetch users
 
-export const fetchAllUsers = () => async (dispatch) => {
+export const fetchUsers = () => async (dispatch) => {
   dispatch(fetchUsersRequest());
   try {
     const response = await api.get("/users/all"); // Adjust the API endpoint as needed

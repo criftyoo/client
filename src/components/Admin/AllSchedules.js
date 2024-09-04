@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllSchedules } from '../../redux/modules/admin';
+import { fetchSchedules } from '../../redux/modules/admin';
 import * as XLSX from 'xlsx';
 
 const AllSchedules = () => {
   const dispatch = useDispatch();
-  const { schedules, loading, error } = useSelector((state) => state.admin);
+  const { schedules = [], loading, error } = useSelector((state) => state.admin); // Default to an empty array
   const [searchQuery, setSearchQuery] = useState('');
   const [usernameFilter, setUsernameFilter] = useState('');
   const [workingHoursFilter, setWorkingHoursFilter] = useState('');
@@ -13,7 +13,7 @@ const AllSchedules = () => {
   const [weekFilter, setWeekFilter] = useState('');
 
   useEffect(() => {
-    dispatch(fetchAllSchedules()); // Fetch all schedules when the component mounts
+    dispatch(fetchSchedules()); // Fetch all schedules when the component mounts
   }, [dispatch]);
 
   const getUniqueValues = useMemo(() => (key) => {
@@ -87,8 +87,7 @@ const AllSchedules = () => {
         className="search-input"
         aria-label="Search schedules"
       />
-      <button         className="btn-primary"
- onClick={exportToExcel}>Download as Excel</button>
+      <button className="btn-primary" onClick={exportToExcel}>Download as Excel</button>
       {filteredSchedules.length > 0 ? (
         <table className="schedule-table">
           <thead>

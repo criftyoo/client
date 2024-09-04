@@ -6,7 +6,7 @@ import {
   updateLeaveRequest,
   deleteLeaveRequest,
 } from '../../redux/modules/leaves';
-import usePersistedState from '../common/PersistedState';
+import usePersistedState from '../hooks/usePersistedState';
 
 const ManageLeaveRequests = () => {
   const [formData, setFormData] = usePersistedState('formData', {

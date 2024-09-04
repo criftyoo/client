@@ -1,5 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
 
+/* SwapRequestForm.css */
+.option-request-sent {
+  background-color: #f58383;
+}
+
 /* filter small All */
 .small-select {
   width: auto;

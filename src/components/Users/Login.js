@@ -31,9 +31,9 @@ const Login = () => {
   useEffect(() => {
     if (isAuthenticated) {
       if (userRole === "admin") {
-        navigate("/admin");
+        navigate("/admin/upload-schedule");
       } else if (userRole === "employee") {
-        navigate("/employee");
+        navigate("/employee/swap-request-form");
       } else {
         navigate("/"); // Default path for any other role
       }

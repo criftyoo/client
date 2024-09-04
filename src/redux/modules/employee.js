@@ -24,7 +24,8 @@ export const fetchSchedulesAction = () => async (dispatch) => {
 
     dispatch({ type: SCHEDULES_SUCCESS, payload: data });
   } catch (error) {
-    dispatch({ type: SCHEDULES_FAIL, payload: error.message });
+    const errorMessage = error.response?.data?.message || error.message;
+    dispatch({ type: SCHEDULES_FAIL, payload: errorMessage });
   }
 };
 
