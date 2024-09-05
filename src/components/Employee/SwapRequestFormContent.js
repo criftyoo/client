@@ -24,7 +24,7 @@ const SwapRequestFormContent = ({
             );
             return (
               <option
-                key={schedule._id}
+                key={`${schedule._id}-${isRequestSent}`} // Use a unique key that changes when isRequestSent changes
                 value={schedule._id}
                 className={isRequestSent ? "option-request-sent" : ""}
               >

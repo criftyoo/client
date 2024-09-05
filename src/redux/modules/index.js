@@ -7,7 +7,7 @@ import preferences from "./preferences";
 import leaves from "./leaves";
 import news from "./news";
 import reportIssues from "./reportIssues";
-
+import swap from "./swap";
 const rootReducer = combineReducers({
   users,
   alerts,
@@ -17,6 +17,7 @@ const rootReducer = combineReducers({
   leaves,
   news,
   reportIssues,
+  swap,
 });
 
 export default rootReducer;

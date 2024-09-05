@@ -21,7 +21,11 @@ const SwapRequestForm = () => {
   const { users = [], usersLoading, user } = useSelector((state) => state.users || {});
   const { error, loadingSwap, swapRequest } = useSelector((state) => state.employee || {});
 
+
   const availableSchedules = useAvailableSchedules(schedules, users, user);
+
+  useEffect(() => {
+  }, [availableSchedules]);
 
   const onSubmit = useCallback((formData, setFormError) => {
     const { selectedScheduleId } = formData;
@@ -55,6 +59,7 @@ const SwapRequestForm = () => {
         recipientSchedule.marketPlace
       )
     );
+    
   }, [schedules, user, dispatch]);
 
   const { formData, formError, handleChange, handleSubmit, setFormError } = useForm({ selectedScheduleId: "" }, onSubmit);

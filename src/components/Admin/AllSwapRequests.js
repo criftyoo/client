@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSwaps, updateSwapStatus } from '../../redux/modules/admin';
+import { cancelAllSwaps } from '../../redux/modules/swap';
 import * as XLSX from 'xlsx';
 
 const SelectFilter = ({ value, onChange, options }) => (
@@ -65,9 +66,10 @@ const AllSwapRequests = () => {
     setSearchQuery(e.target.value);
   };
 
-  const handleAccept = async (id) => {
+  const handleAccept = async (id, requesterId, recipientId) => {
     try {
       await dispatch(updateSwapStatus(id, 'approved', 'Swap has been approved by the WFM', 'admin', 'approved'));
+      await dispatch(cancelAllSwaps(requesterId, recipientId));
     } catch (err) {
       setActionError('Error approving swap');
       console.error('Error approving swap:', err);
@@ -182,7 +184,7 @@ const AllSwapRequests = () => {
                 <td>
                   {swap.status === 'pending' ? (
                     <>
-                      <button onClick={() => handleAccept(swap._id)}>Accept</button>
+                      <button onClick={() => handleAccept(swap._id, swap.requester._id, swap.recipient._id)}>Accept</button>
                       <button onClick={() => handleReject(swap._id)}>Reject</button>
                     </>
                   ) : (
