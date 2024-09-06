@@ -7,7 +7,6 @@ const UploadSchedule = () => {
   const [localError, setLocalError] = useState(null);
   const dispatch = useDispatch();
   
-  // Access Redux state
   const uploadProgress = useSelector((state) => state.admin.uploadProgress);
   const loading = useSelector((state) => state.admin.loading.upload);
   const message = useSelector((state) => state.admin.schedules.message); 
@@ -43,7 +42,6 @@ const UploadSchedule = () => {
     }
   };
 
-  // Function to render error messages in a table
   const renderErrorTable = (error) => {
     if (Array.isArray(error)) {
       return (

@@ -21,7 +21,6 @@ const SwapRequestForm = () => {
   const { users = [], usersLoading, user } = useSelector((state) => state.users || {});
   const { error, loadingSwap, swapRequest } = useSelector((state) => state.employee || {});
 
-
   const availableSchedules = useAvailableSchedules(schedules, users, user);
 
   useEffect(() => {
@@ -49,6 +48,17 @@ const SwapRequestForm = () => {
       return;
     }
 
+    // Additional validation to avoid race conditions
+    if (loadingSchedules || usersLoading) {
+      setFormError("Data is still loading. Please wait.");
+      return;
+    }
+
+    if (!user || !recipientSchedule.user || !requesterSchedule.user) {
+      setFormError("User data is incomplete. Please try again.");
+      return;
+    }
+
     dispatch(
       createSwapRequestAction(
         selectedScheduleId,
@@ -60,7 +70,7 @@ const SwapRequestForm = () => {
       )
     );
     
-  }, [schedules, user, dispatch]);
+  }, [schedules, user, loadingSchedules, usersLoading, dispatch]);
 
   const { formData, formError, handleChange, handleSubmit, setFormError } = useForm({ selectedScheduleId: "" }, onSubmit);
 

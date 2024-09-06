@@ -26,7 +26,6 @@ const AllSwapRequests = () => {
   const [recipientFilter, setRecipientFilter] = useState('');
   const [requesterScheduleFilter, setRequesterScheduleFilter] = useState('');
   const [recipientScheduleFilter, setRecipientScheduleFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
   const [approvalFilter, setApprovalFilter] = useState('');
   const [actionError, setActionError] = useState(null);
 
@@ -59,7 +58,6 @@ const AllSwapRequests = () => {
   const uniqueRequesterWeeks = useMemo(() => getUniqueValues('requesterSchedule.week'), [getUniqueValues]);
   const uniqueRecipientSchedules = useMemo(() => getUniqueValues('recipientSchedule.workingHours'), [getUniqueValues]);
   const uniqueRecipientWeeks = useMemo(() => getUniqueValues('recipientSchedule.week'), [getUniqueValues]);
-  const uniqueStatuses = useMemo(() => getUniqueValues('status'), [getUniqueValues]);
   const uniqueApprovals = useMemo(() => getUniqueValues('adminApproval'), [getUniqueValues]);
 
   const handleSearch = (e) => {
@@ -92,22 +90,20 @@ const AllSwapRequests = () => {
       const recipientSchedule = `${swap.recipientSchedule.workingHours} (Week ${swap.recipientSchedule.week})`;
 
       return (
-        swap.status !== 'pending' &&
+        (swap.status === 'approved' || swap.status === 'accepted') &&
         (swap.requester?.username?.toLowerCase().includes(searchQueryLower) ||
           swap.recipient?.username?.toLowerCase().includes(searchQueryLower) ||
           requesterSchedule.toLowerCase().includes(searchQueryLower) ||
           recipientSchedule.toLowerCase().includes(searchQueryLower) ||
-          swap.status?.toLowerCase().includes(searchQueryLower) ||
           swap.adminApproval?.toLowerCase().includes(searchQueryLower)) &&
         (requesterFilter === '' || swap.requester?.username === requesterFilter) &&
         (recipientFilter === '' || swap.recipient?.username === recipientFilter) &&
         (requesterScheduleFilter === '' || requesterSchedule === requesterScheduleFilter) &&
         (recipientScheduleFilter === '' || recipientSchedule === recipientScheduleFilter) &&
-        (statusFilter === '' || swap.status === statusFilter) &&
         (approvalFilter === '' || swap.adminApproval === approvalFilter)
       );
     });
-  }, [swaps, searchQuery, requesterFilter, recipientFilter, requesterScheduleFilter, recipientScheduleFilter, statusFilter, approvalFilter]);
+  }, [swaps, searchQuery, requesterFilter, recipientFilter, requesterScheduleFilter, recipientScheduleFilter, approvalFilter]);
 
   const exportToExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(filteredSwaps.map(swap => ({
@@ -163,10 +159,6 @@ const AllSwapRequests = () => {
               <SelectFilter value={recipientScheduleFilter} onChange={(e) => setRecipientScheduleFilter(e.target.value)} options={uniqueRecipientSchedules} />
             </th>
             <th>
-              Status
-              <SelectFilter value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} options={uniqueStatuses} />
-            </th>
-            <th>
               Approval
               <SelectFilter value={approvalFilter} onChange={(e) => setApprovalFilter(e.target.value)} options={uniqueApprovals} />
             </th>
@@ -180,9 +172,9 @@ const AllSwapRequests = () => {
                 <td>{swap.recipient.username}</td>
                 <td>{`${swap.requesterSchedule.workingHours} (Week ${swap.requesterSchedule.week})`}</td>
                 <td>{`${swap.recipientSchedule.workingHours} (Week ${swap.recipientSchedule.week})`}</td>
-                <td>{swap.status}</td>
+                
                 <td>
-                  {swap.status === 'pending' ? (
+                  {swap.status === 'accepted' ? (
                     <>
                       <button onClick={() => handleAccept(swap._id, swap.requester._id, swap.recipient._id)}>Accept</button>
                       <button onClick={() => handleReject(swap._id)}>Reject</button>

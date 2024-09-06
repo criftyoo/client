@@ -59,11 +59,33 @@ const useAvailableSchedules = (schedules, users, user) => {
       const scheduleUser = users.find((u) => u._id === schedule.user._id);
       const latestSchedule = latestSchedulesMap[schedule.user._id];
 
-      if (!scheduleUser || scheduleUser._id === user._id || !scheduleUser.isOpenForSwap || scheduleUser.role !== "employee") {
+      if (!scheduleUser) {
+        console.log(`User not found for schedule: ${schedule._id}`);
         return;
       }
 
-      if (schedule.skill !== requesterSchedule.skill || schedule.marketPlace !== requesterSchedule.marketPlace) {
+      if (scheduleUser._id === user._id) {
+        console.log(`Skipping own schedule: ${schedule._id}`);
+        return;
+      }
+
+      if (!scheduleUser.isOpenForSwap) {
+        console.log(`User not open for swap: ${scheduleUser._id}`);
+        return;
+      }
+
+      if (scheduleUser.role !== "employee") {
+        console.log(`User role not eligible: ${scheduleUser.role}`);
+        return;
+      }
+
+      if (schedule.skill !== requesterSchedule.skill) {
+        console.log(`Skill mismatch: ${schedule.skill} vs ${requesterSchedule.skill}`);
+        return;
+      }
+
+      if (schedule.marketPlace !== requesterSchedule.marketPlace) {
+        console.log(`MarketPlace mismatch: ${schedule.marketPlace} vs ${requesterSchedule.marketPlace}`);
         return;
       }
 
@@ -79,10 +101,11 @@ const useAvailableSchedules = (schedules, users, user) => {
 
       if (result && schedule._id === latestSchedule._id) {
         eligibleSchedules.push(schedule);
+      } else {
+        console.log(`Schedule not eligible: ${schedule._id}`);
       }
     });
 
-    console.log("Available schedules before return:", eligibleSchedules);
     return eligibleSchedules;
   }, [schedules, users, user]);
 };
