@@ -11,7 +11,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import ClientReportForm from "../ReportIssues/ReportIssuesForm";
 
-const ENDPOINT = "https://scheduler-server-a6deb2hrgug8evbw.westeurope-01.azurewebsites.net/"; // Update this to your server's base URL
+const ENDPOINT =
+  "https://scheduler-server-a6deb2hrgug8evbw.westeurope-01.azurewebsites.net/"; // Update this to your server's base URL
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -86,44 +87,46 @@ const Navbar = () => {
       </h1>
       <Fragment>
         <ul>
-          <li>
-            Report an issue{" "}
-            <FontAwesomeIcon
-              icon={faExclamationCircle}
-              onClick={toggleForm}
-              className="report-icon"
-            />
-            {showForm && (
-              <div className="popup-form">
-                <ClientReportForm />
-              </div>
-            )}
-          </li>
-          <li className="notifications">
-            <div onClick={handleNotificationsClick}>
-              <i className="fas fa-bell"></i>{" "}
-              {notifications.length > 0 && (
-                <span className="notification-count">
-                  {notifications.length}
-                </span>
-              )}
-            </div>
-            {showNotifications && (
-              <div className="notification-dropdown">
-                {notifications.length === 0 ? (
-                  <div className="notification-item">No new notifications</div>
-                ) : (
-                  notifications.map((notification, index) => (
-                    <div key={index} className="notification-item">
-                      {notification.message}
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
-          </li>
           {isAuthenticated && user && user.role === "employee" && (
             <>
+              <li>
+                Report an issue{" "}
+                <FontAwesomeIcon
+                  icon={faExclamationCircle}
+                  onClick={toggleForm}
+                  className="report-icon"
+                />
+                {showForm && (
+                  <div className="popup-form">
+                    <ClientReportForm />
+                  </div>
+                )}
+              </li>
+              <li className="notifications">
+                <div onClick={handleNotificationsClick}>
+                  <i className="fas fa-bell"></i>{" "}
+                  {notifications.length > 0 && (
+                    <span className="notification-count">
+                      {notifications.length}
+                    </span>
+                  )}
+                </div>
+                {showNotifications && (
+                  <div className="notification-dropdown">
+                    {notifications.length === 0 ? (
+                      <div className="notification-item">
+                        No new notifications
+                      </div>
+                    ) : (
+                      notifications.map((notification, index) => (
+                        <div key={index} className="notification-item">
+                          {notification.message}
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+              </li>
               <li>
                 <button
                   className={`toggle-btn ${toggled ? "toggled" : ""}`}
