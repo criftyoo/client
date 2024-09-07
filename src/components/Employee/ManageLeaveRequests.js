@@ -26,7 +26,6 @@ const ManageLeaveRequests = () => {
 
   useEffect(() => {
     if (loggedInUser) {
-      console.log('Fetching leave requests for user:', loggedInUser);
       dispatch(fetchLeaveRequestsByUserId(loggedInUser));
     }
   }, [dispatch, loggedInUser]);
@@ -97,12 +96,7 @@ const ManageLeaveRequests = () => {
     return <div className="manage-leave-error-message">Error: {error}</div>;
   }
 
-  // Check if there is at least one pending request
   const hasPendingRequests = leaveRequests.some(request => request.status === 'pending');
-
-  // Debugging logs
-  console.log('Logged in user:', loggedInUser);
-  console.log('Leave requests:', leaveRequests);
 
   return (
     <div className="main manage-leave-main">
@@ -112,7 +106,7 @@ const ManageLeaveRequests = () => {
         <div className="modal">
           <div className="modal-content">
             <span className="close" onClick={closeModal}>&times;</span>
-            <h3>{isEditing ? 'Edit Leave Request' : 'Create New Leave Request'}</h3> {/* Title for the form */}
+            <h3>{isEditing ? 'Edit Leave Request' : 'Create New Leave Request'}</h3> 
             <form className="form1" onSubmit={handleSubmit}>
               <input
                 className="input-text"
