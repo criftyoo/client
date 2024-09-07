@@ -32,8 +32,7 @@
     "start": "cross-env NODE_OPTIONS=--trace-deprecation react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "tauri": "tauri"
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
