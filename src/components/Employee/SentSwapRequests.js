@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchSentSwaps } from "../../redux/modules/admin";
+import { fetchSentSwaps } from "../../redux/modules/adminSlice";
 
 const SentSwapRequests = () => {
   const dispatch = useDispatch();
@@ -73,7 +73,8 @@ const SentSwapRequests = () => {
         <table className="swap-table">
           <thead>
             <tr>
-              <th>Hidden</th> <th>Requested Schedule</th>
+              <th>Hidden</th>
+              <th>Requested Schedule</th>
               <th>Creation Date</th>
               <th>Last Update</th>
               <th>Status</th>

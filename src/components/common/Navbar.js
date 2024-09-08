@@ -5,7 +5,7 @@ import {
   updateOpenForSwap,
   fetchIsOpenForSwap,
   logout,
-} from "../../redux/modules/users";
+} from "../../redux/modules/usersSlice";
 import socketIOClient from "socket.io-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";

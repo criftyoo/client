@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchLeaveRequests,
   updateLeaveRequest,
-} from "../../redux/modules/leaves"; // Adjust the import path as necessary
+} from "../../redux/modules/leavesSlice"; // Adjust the import path as necessary
 import * as XLSX from "xlsx";
 
 const exportToExcel = (data, fileName = "leave_requests.xlsx") => {

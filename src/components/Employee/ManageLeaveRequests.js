@@ -5,7 +5,7 @@ import {
   createLeaveRequest,
   updateLeaveRequest,
   deleteLeaveRequest,
-} from '../../redux/modules/leaves';
+} from '../../redux/modules/leavesSlice';
 import usePersistedState from '../hooks/usePersistedState';
 
 const ManageLeaveRequests = () => {

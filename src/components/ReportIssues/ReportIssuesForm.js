@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { reportIssues } from '../../redux/modules/reportIssues';
+import { reportIssues } from '../../redux/modules/reportIssuesSlice';
 
 const ClientReportForm = () => {
   const [issue, setIssue] = useState('');

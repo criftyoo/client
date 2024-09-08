@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchSchedules } from '../../redux/modules/admin';
+import { fetchSchedules } from '../../redux/modules/adminSlice';
 import * as XLSX from 'xlsx';
 
 const AllSchedules = () => {

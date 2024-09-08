@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { connect } from "react-redux";
 import { Link, Navigate } from "react-router-dom";
 import PropTypes from "prop-types";
-import { register } from "../../redux/modules/users";
-import { showAlertMessage } from "../../redux/modules/alerts";
+import { register } from "../../redux/modules/usersSlice";
+import { showAlertMessage } from "../../redux/modules/alertsSlice";
 
 const Register = ({ register, showAlertMessage, isAuthenticated }) => {
   const [formData, setFormData] = useState({

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { getAllPreferences } from '../../redux/modules/preferences';
+import { getAllPreferences } from '../../redux/modules/preferencesSlice';
 import * as XLSX from 'xlsx';
 
 const AllPreferences = () => {

@@ -1,8 +1,8 @@
 import React, { useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createSwapRequestAction, resetSwapRequest } from "../../redux/modules/employee";
-import { fetchSchedules } from "../../redux/modules/admin";
-import { fetchUsers } from "../../redux/modules/users";
+import { createSwapRequestAction, resetSwapRequest } from "../../redux/modules/employeeSlice";
+import { fetchSchedules } from "../../redux/modules/adminSlice";
+import { fetchUsers } from "../../redux/modules/usersSlice";
 import SwapRequestFormContent from "./SwapRequestFormContent";
 import useAvailableSchedules from "../hooks/useAvailableSchedules";
 import useForm from "../hooks/useForm";

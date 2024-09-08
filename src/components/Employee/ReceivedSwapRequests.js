@@ -4,7 +4,7 @@ import {
   fetchReceivedSwaps,
   updateSwapStatus,
   clearUploadError, // Import the action to reset the error state
-} from "../../redux/modules/admin";
+} from "../../redux/modules/adminSlice";
 
 
 const ReceivedSwapRequests = () => {

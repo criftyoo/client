@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchSwaps, updateSwapStatus } from '../../redux/modules/admin';
-import { cancelAllSwaps } from '../../redux/modules/swap';
+import { fetchSwaps, updateSwapStatus } from '../../redux/modules/adminSlice';
+import { cancelAllSwaps } from '../../redux/modules/swapSlice';
 import * as XLSX from 'xlsx';
 
 const SelectFilter = ({ value, onChange, options }) => (

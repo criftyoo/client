@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { uploadSchedule, clearUploadError } from "../../redux/modules/admin";
+import { uploadSchedule, clearUploadError } from "../../redux/modules/adminSlice";
 
 const UploadSchedule = () => {
   const [file, setFile] = useState(null);
