@@ -1,5 +1,5 @@
 import axios from "axios";
-import { jwtDecode } from "jwt-decode"; // Corrected import
+import { jwtDecode } from "jwt-decode"; 
 
 const serverUrl = "https://scheduler-server-a6deb2hrgug8evbw.westeurope-01.azurewebsites.net/";
 
