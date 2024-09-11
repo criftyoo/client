@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllNews } from "../../redux/modules/news";
+import { fetchAllNews } from "../../redux/modules/newsSlice";
 import styles from '../../News.module.css';
 
 const NewsListClient = () => {

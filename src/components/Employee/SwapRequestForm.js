@@ -1,11 +1,8 @@
 import React, { useEffect, useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  createSwapRequestAction,
-  resetSwapRequest,
-} from "../../redux/modules/employee";
-import { fetchSchedules } from "../../redux/modules/admin";
-import { fetchUsers } from "../../redux/modules/users";
+import { createSwapRequestAction, resetSwapRequest } from "../../redux/modules/employeeSlice";
+import { fetchSchedules } from "../../redux/modules/adminSlice";
+import { fetchUsers } from "../../redux/modules/usersSlice";
 import SwapRequestFormContent from "./SwapRequestFormContent";
 import useAvailableSchedules from "../hooks/useAvailableSchedules";
 import useForm from "../hooks/useForm";
@@ -20,17 +17,9 @@ const SwapRequestForm = () => {
     dispatch(fetchUsers());
   }, [dispatch]);
 
-  const { schedules = [], loadingSchedules } = useSelector(
-    (state) => state.admin || {}
-  );
-  const {
-    users = [],
-    usersLoading,
-    user,
-  } = useSelector((state) => state.users || {});
-  const { error, loadingSwap, swapRequest } = useSelector(
-    (state) => state.employee || {}
-  );
+  const { schedules = [], loadingSchedules } = useSelector((state) => state.admin || {});
+  const { users = [], usersLoading, user } = useSelector((state) => state.users || {});
+  const { error, loadingSwap, swapRequest } = useSelector((state) => state.employee || {});
 
   const availableSchedules = useAvailableSchedules(schedules, users, user);
 
@@ -75,8 +64,31 @@ const SwapRequestForm = () => {
     [schedules, user, dispatch]
   );
 
-  const { formData, formError, handleChange, handleSubmit, setFormError } =
-    useForm({ selectedScheduleId: "" }, onSubmit);
+    // Additional validation to avoid race conditions
+    if (loadingSchedules || usersLoading) {
+      setFormError("Data is still loading. Please wait.");
+      return;
+    }
+
+    if (!user || !recipientSchedule.user || !requesterSchedule.user) {
+      setFormError("User data is incomplete. Please try again.");
+      return;
+    }
+
+    dispatch(
+      createSwapRequestAction(
+        selectedScheduleId,
+        requesterSchedule._id,
+        recipientSchedule.user._id,
+        user._id,
+        recipientSchedule.skill,
+        recipientSchedule.marketPlace
+      )
+    );
+    
+  }, [schedules, user, loadingSchedules, usersLoading, dispatch]);
+
+  const { formData, formError, handleChange, handleSubmit, setFormError } = useForm({ selectedScheduleId: "" }, onSubmit);
 
   useEffect(() => {
     setFormError(error || "");

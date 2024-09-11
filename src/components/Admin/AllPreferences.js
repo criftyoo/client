@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+<<<<<<< HEAD
 import { getAllPreferences } from '../../redux/modules/preferences';
 import LoadingMessage from '../common/LoadingMessage';
 import ErrorMessage from '../common/ErrorMessage';
@@ -7,6 +8,10 @@ import useFetchData from '../hooks/useFetchData';
 import exportToExcel from '../common/exportToExcel';
 import SelectFilter from '../common/SelectFilter';
 import SearchInput from '../common/SearchInput';
+=======
+import { getAllPreferences } from '../../redux/modules/preferencesSlice';
+import * as XLSX from 'xlsx';
+>>>>>>> 1408cdf67de0678b134fd1e573047456d3e59e43
 
 const AllPreferences = () => {
     const { data: preferences, loading, error } = useFetchData(getAllPreferences, (state) => state.preferences.preferences);

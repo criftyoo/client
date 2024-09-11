@@ -17,7 +17,7 @@ const EmployeeDashboard = () => {
           <Route path="employee-swap-requests" element={<SentReceivedSwaps />} />
           <Route path="preferences" element={<PreferenceForm />} />
           <Route path="employee-leave-requests" element={<ManageLeaveRequests />} />
-          <Route path="BreakingNews" element={<NewsListClient />} /> {/* Add route for NewsListClient */}
+          <Route path="BreakingNews" element={<NewsListClient />} /> 
         </Routes>
       </div>
     </div>

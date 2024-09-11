@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { fetchLeaveRequests, updateLeaveRequest } from "../../redux/modules/leaves"; // Adjust the import path as necessary
@@ -7,6 +8,16 @@ import useFetchData from "../hooks/useFetchData";
 import exportToExcel from "../common/exportToExcel";
 import SelectFilter from "../common/SelectFilter";
 import SearchInput from "../common/SearchInput";
+=======
+// LeaveRequests.js
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchLeaveRequests,
+  updateLeaveRequest,
+} from "../../redux/modules/leavesSlice"; // Adjust the import path as necessary
+import * as XLSX from "xlsx";
+>>>>>>> 1408cdf67de0678b134fd1e573047456d3e59e43
 
 const LeaveRequests = () => {
   const dispatch = useDispatch();

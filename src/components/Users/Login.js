@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { login } from "../../redux/modules/users";
-import { showAlertMessage } from "../../redux/modules/alerts";
+import { login } from "../../redux/modules/usersSlice";
+import { showAlertMessage } from "../../redux/modules/alertsSlice";
 
 const Login = () => {
   const [formData, setFormData] = useState({

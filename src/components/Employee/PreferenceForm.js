@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   createPreference,
   updatePreference,
-} from "../../redux/modules/preferences";
+} from "../../redux/modules/preferencesSlice";
 
 const PreferenceForm = ({ preference = {}, isEdit = false }) => {
   const [formData, setFormData] = useState(preference);

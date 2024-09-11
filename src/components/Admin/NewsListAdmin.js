@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAllNews, deleteNews, updateNews } from "../../redux/modules/news";
+import { fetchAllNews, deleteNews, updateNews } from "../../redux/modules/newsSlice";
 import styles from '../../News.module.css';
 
 const NewsListAdmin = () => {

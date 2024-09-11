@@ -18,7 +18,6 @@ import SwapRequestForm from "./components/Employee/SwapRequestForm";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import EmployeeDashboard from "./components/Employee/EmployeeDashboard";
 import PrivateRoute from "./components/common/PrivateRoute";
-import Notification from "./components/common/Notification"; // Import Notification component
 
 const options = {
   position: positions.BOTTOM_RIGHT,
@@ -35,7 +34,6 @@ function Main() {
     <>
       <Alert />
       {!hideNavbarPaths.includes(location.pathname) && <Navbar />}
-      <Notification /> {/* Add Notification component */}
       <ErrorBoundary>
         <Routes>
           <Route exact path="/" element={<Landing />} />

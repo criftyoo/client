@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { createNews, updateNews } from "../../redux/modules/news";
+import { createNews, updateNews } from "../../redux/modules/newsSlice";
 import styles from '../../News.module.css';
 
 const NewsForm = ({ existingNews }) => {

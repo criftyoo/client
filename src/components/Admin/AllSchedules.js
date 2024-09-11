@@ -1,11 +1,16 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+<<<<<<< HEAD
 import { fetchSchedules } from '../../redux/modules/admin';
 import SelectFilter from '../common/SelectFilter';
 import LoadingMessage from '../common/LoadingMessage';
 import ErrorMessage from '../common/ErrorMessage';
 import exportToExcel from '../common/exportToExcel';
 import SearchInput from '../common/SearchInput';
+=======
+import { fetchSchedules } from '../../redux/modules/adminSlice';
+import * as XLSX from 'xlsx';
+>>>>>>> 1408cdf67de0678b134fd1e573047456d3e59e43
 
 const AllSchedules = () => {
   const dispatch = useDispatch();

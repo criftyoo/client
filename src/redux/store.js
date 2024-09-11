@@ -1,17 +1,18 @@
 import { configureStore } from "@reduxjs/toolkit";
-import {thunk} from "redux-thunk";
 import rootReducer from "./modules";
+import { setupListeners } from "@reduxjs/toolkit/query";
 
-const initialState = {};
-
-const middleware = [thunk];
-
+// Configure the store
 const store = configureStore({
   reducer: rootReducer,
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(middleware),
   devTools: process.env.NODE_ENV === 'development',
-  preloadedState: initialState,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
+
+// Optional: Enable listener behavior for RTK Query
+setupListeners(store.dispatch);
 
 export default store;
