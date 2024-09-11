@@ -1,8 +1,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
 
+/*  classes to the HTML elements within the dangerouslySetInnerHTML content. */
+.schedule-info {
+  margin-top: 10px;
+  line-height: 1.5;
+}
+
+.schedule-info .label {
+  font-weight: bold;
+  color: #333;
+  font-size: 1.1em;
+}
+
+.schedule-info .value {
+  color: #555;
+}
+
 /* SwapRequestForm.css */
 .option-request-sent {
-  background-color: #f58383;
+  font-weight: bold;
+  color: red;
 }
 
 /* filter small All */
@@ -444,7 +461,7 @@ body {
   padding: 8px;
   text-align: left;
   text-decoration-color: #007bff;
-  font-size: 14px; /* Set the text size for table headers and cells */
+  font-size: 16px; 
 }
 
 .swap-table th {

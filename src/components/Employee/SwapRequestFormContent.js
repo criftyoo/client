@@ -24,7 +24,7 @@ const SwapRequestFormContent = ({
             );
             return (
               <option
-                key={`${schedule._id}-${isRequestSent}`} // Use a unique key that changes when isRequestSent changes
+                key={`${schedule._id}-${isRequestSent}`} 
                 value={schedule._id}
                 className={isRequestSent ? "option-request-sent" : ""}
               >
@@ -37,7 +37,7 @@ const SwapRequestFormContent = ({
       ) : (
         <p>No one is available to swap with.</p>
       )}
-      <button
+      <button className="btn btn-primary"
         type="submit"
         disabled={loadingSwap || availableSchedules.length === 0}
       >

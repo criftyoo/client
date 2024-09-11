@@ -93,9 +93,9 @@ export const updateOpenForSwap = (formData) => async (dispatch) => {
     const res = await api.post("/users/updateOpenForSwap", formData);
     dispatch({ type: UPDATE_OPEN_FOR_SWAP_SUCCESS, payload: res.data });
     if (res.data.isOpenForSwap) {
-      dispatch(showAlertMessage("You are now open for swaps"));
+      dispatch(showAlertMessage("You are now open for swaps",'success'));
     } else {
-      dispatch(showAlertMessage("You will no longer receive swap requests"));
+      dispatch(showAlertMessage("You will no longer receive swap requests","error"));
     }
   } catch (error) {
     if (error.response && error.response.data.errors) {

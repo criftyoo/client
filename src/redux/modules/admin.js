@@ -4,7 +4,7 @@ import { api } from "../../utils";
 const UPLOAD_SCHEDULE_REQUEST = "UPLOAD_SCHEDULE_REQUEST";
 const UPLOAD_SCHEDULE_SUCCESS = "UPLOAD_SCHEDULE_SUCCESS";
 const UPLOAD_SCHEDULE_FAIL = "UPLOAD_SCHEDULE_FAIL";
-const UPLOAD_SCHEDULE_PROGRESS = "UPLOAD_SCHEDULE_PROGRESS"; // Progress added
+const UPLOAD_SCHEDULE_PROGRESS = "UPLOAD_SCHEDULE_PROGRESS";
 
 const FETCH_ALL_SCHEDULES_REQUEST = "FETCH_ALL_SCHEDULES_REQUEST";
 const FETCH_ALL_SCHEDULES_SUCCESS = "FETCH_ALL_SCHEDULES_SUCCESS";
@@ -30,15 +30,19 @@ const REQUEST_SWAP_REQUEST = "REQUEST_SWAP_REQUEST";
 const REQUEST_SWAP_SUCCESS = "REQUEST_SWAP_SUCCESS";
 const REQUEST_SWAP_FAIL = "REQUEST_SWAP_FAIL";
 
-
 const FETCH_APPROVED_SWAP_REQUESTS_REQUEST =
   "FETCH_APPROVED_SWAP_REQUESTS_REQUEST";
 const FETCH_APPROVED_SWAP_REQUESTS_SUCCESS =
   "FETCH_APPROVED_SWAP_REQUESTS_SUCCESS";
 const FETCH_APPROVED_SWAP_REQUESTS_FAIL = "FETCH_APPROVED_SWAP_REQUESTS_FAIL";
 
-
 const CLEAR_UPLOAD_ERROR = "CLEAR_UPLOAD_ERROR";
+
+const handleError = (dispatch, type, error) => {
+  const errorMessage =
+    error.response?.data?.message || error.response?.data || error.message || "An unknown error occurred.";
+  dispatch({ type, payload: errorMessage });
+};
 
 // Upload Schedule Action
 export const uploadSchedule = (formData) => async (dispatch) => {
@@ -50,7 +54,6 @@ export const uploadSchedule = (formData) => async (dispatch) => {
       onUploadProgress: (event) => {
         if (event.total) {
           const progress = Math.round((event.loaded * 100) / event.total);
-          
           dispatch({ type: UPLOAD_SCHEDULE_PROGRESS, payload: progress });
         }
       },
@@ -58,115 +61,53 @@ export const uploadSchedule = (formData) => async (dispatch) => {
 
     dispatch({ type: UPLOAD_SCHEDULE_SUCCESS, payload: data });
   } catch (error) {
-    // Safely access the error message
-    const errorMessage =
-      error.response?.data?.message ||
-      error.response?.data ||
-      error.message ||
-      "An unknown error occurred.";
-    dispatch({
-      type: UPLOAD_SCHEDULE_FAIL,
-      payload: errorMessage,
-    });
+    handleError(dispatch, UPLOAD_SCHEDULE_FAIL, error);
   }
 };
 
-// Fetch All Schedules Action
+const fetchData = async (dispatch, requestType, successType, failType, apiCall) => {
+  try {
+    dispatch({ type: requestType });
+    const { data } = await apiCall();
+    dispatch({ type: successType, payload: data });
+  } catch (error) {
+    handleError(dispatch, failType, error);
+  }
+};
+
 export const fetchSchedules = () => async (dispatch) => {
-  try {
-    dispatch({ type: FETCH_ALL_SCHEDULES_REQUEST });
-    const { data } = await api.get("/schedules/all");
-    dispatch({ type: FETCH_ALL_SCHEDULES_SUCCESS, payload: data });
-  } catch (error) {
-    dispatch({ type: FETCH_ALL_SCHEDULES_FAIL, payload: error.message });
-  }
+  await fetchData(dispatch, FETCH_ALL_SCHEDULES_REQUEST, FETCH_ALL_SCHEDULES_SUCCESS, FETCH_ALL_SCHEDULES_FAIL, () => api.get("/schedules/all"));
 };
 
-// Fetch All Schedules with Working Hours
 export const fetchAllSchedulesWithWorkingHours = () => async (dispatch) => {
-  try {
-    dispatch({ type: FETCH_ALL_SCHEDULES_REQUEST });
-
-    const { data } = await api.get("/schedules/all-with-working-hours");
-    dispatch({ type: FETCH_ALL_SCHEDULES_SUCCESS, payload: data });
-  } catch (error) {
-    dispatch({
-      type: FETCH_ALL_SCHEDULES_FAIL,
-      payload: error.response?.data?.message || error.message,
-    });
-  }
+  await fetchData(dispatch, FETCH_ALL_SCHEDULES_REQUEST, FETCH_ALL_SCHEDULES_SUCCESS, FETCH_ALL_SCHEDULES_FAIL, () => api.get("/schedules/all-with-working-hours"));
 };
 
-// Fetch All Swaps Action
 export const fetchSwaps = () => async (dispatch) => {
-  try {
-    dispatch({ type: FETCH_ALL_SWAPS_REQUEST });
-
-    const { data } = await api.get("/swap/swaps");
-    dispatch({ type: FETCH_ALL_SWAPS_SUCCESS, payload: data });
-  } catch (error) {
-    const errorMessage = error.response?.data?.message || error.message;
-    dispatch({
-      type: FETCH_ALL_SWAPS_FAIL,
-      payload: errorMessage,
-    });
-  }
+  await fetchData(dispatch, FETCH_ALL_SWAPS_REQUEST, FETCH_ALL_SWAPS_SUCCESS, FETCH_ALL_SWAPS_FAIL, () => api.get("/swap/swaps"));
 };
 
-// Fetch Received Swap Requests by a Specific User
 export const fetchReceivedSwaps = (userId) => async (dispatch) => {
-  try {
-    dispatch({ type: FETCH_RECEIVED_SWAPS_REQUEST });
-
-    const { data } = await api.get(`/swap/received/${userId}`);
-    dispatch({ type: FETCH_RECEIVED_SWAPS_SUCCESS, payload: data });
-  } catch (error) {
-    dispatch({
-      type: FETCH_RECEIVED_SWAPS_FAIL,
-      payload: error.response?.data?.message || error.message,
-    });
-  }
+  await fetchData(dispatch, FETCH_RECEIVED_SWAPS_REQUEST, FETCH_RECEIVED_SWAPS_SUCCESS, FETCH_RECEIVED_SWAPS_FAIL, () => api.get(`/swap/received/${userId}`));
 };
 
-// Fetch Sent Swap Requests by a Specific User
 export const fetchSentSwaps = (userId) => async (dispatch) => {
-  try {
-    dispatch({ type: FETCH_SENT_SWAPS_REQUEST });
-
-    const { data } = await api.get(`/swap/sent/${userId}`);
-    dispatch({ type: FETCH_SENT_SWAPS_SUCCESS, payload: data });
-  } catch (error) {
-    dispatch({
-      type: FETCH_SENT_SWAPS_FAIL,
-      payload: error.response?.data?.message || error.message,
-    });
-  }
+  await fetchData(dispatch, FETCH_SENT_SWAPS_REQUEST, FETCH_SENT_SWAPS_SUCCESS, FETCH_SENT_SWAPS_FAIL, () => api.get(`/swap/sent/${userId}`));
 };
 
-/// Update Swap Status Action
 export const updateSwapStatus = (swapId, status, message, role, adminStatus) => async (dispatch) => {
- 
   try {
     dispatch({ type: UPDATE_SWAP_STATUS_REQUEST });
 
-    const { data } = await api.put(`/swap/update/${swapId}`, {
-      status,
-      message,
-      role,
-      adminStatus,
-    });
+    const { data } = await api.put(`/swap/update/${swapId}`, { status, message, role, adminStatus });
 
     dispatch({ type: UPDATE_SWAP_STATUS_SUCCESS, payload: data });
-    dispatch(fetchSchedules()); 
+    dispatch(fetchSchedules());
   } catch (error) {
-    dispatch({
-      type: UPDATE_SWAP_STATUS_FAIL,
-      payload: error.response?.data?.message || error.message,
-    });
+    handleError(dispatch, UPDATE_SWAP_STATUS_FAIL, error);
   }
 };
 
-// Request Schedule Swap Action
 export const requestScheduleSwap = (swapId) => async (dispatch) => {
   try {
     dispatch({ type: REQUEST_SWAP_REQUEST });
@@ -174,41 +115,25 @@ export const requestScheduleSwap = (swapId) => async (dispatch) => {
     const { data } = await api.put(`/swap/request/${swapId}`);
     dispatch({ type: REQUEST_SWAP_SUCCESS, payload: data });
   } catch (error) {
-    dispatch({
-      type: REQUEST_SWAP_FAIL,
-      payload: error.response?.data?.message || error.message,
-    });
+    handleError(dispatch, REQUEST_SWAP_FAIL, error);
   }
 };
 
-// Fetch Approved Swap Requests Action
 export const fetchApprovedSwapRequests = () => async (dispatch) => {
-  try {
-    dispatch({ type: FETCH_APPROVED_SWAP_REQUESTS_REQUEST });
-
-    const { data } = await api.get("/swap/approved-swaps");
-    dispatch({ type: FETCH_APPROVED_SWAP_REQUESTS_SUCCESS, payload: data });
-  } catch (error) {
-    dispatch({
-      type: FETCH_APPROVED_SWAP_REQUESTS_FAIL,
-      payload: error.response?.data?.message || error.message,
-    });
-  }
+  await fetchData(dispatch, FETCH_APPROVED_SWAP_REQUESTS_REQUEST, FETCH_APPROVED_SWAP_REQUESTS_SUCCESS, FETCH_APPROVED_SWAP_REQUESTS_FAIL, () => api.get("/swap/approved-swaps"));
 };
 
-// Clear Upload Error Action
 export const clearUploadError = () => (dispatch) => {
   dispatch({ type: CLEAR_UPLOAD_ERROR });
 };
 
-// Initial State
 const initialState = {
   schedules: [],
   swaps: {
     received: [],
     sent: [],
     all: [],
-    approved: [], 
+    approved: [],
   },
   loading: {
     upload: false,
@@ -218,9 +143,9 @@ const initialState = {
     updateSwap: false,
     requestSwap: false,
     allSchedules: false,
-    approvedSwaps: false, 
+    approvedSwaps: false,
   },
-  uploadProgress: 0, 
+  uploadProgress: 0,
   error: null,
 };
 

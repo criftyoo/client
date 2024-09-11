@@ -19,6 +19,20 @@ export const setAuthToken = (token) => {
   }
 };
 
+//a request interceptor to include the token from local storage
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 export function getWeekNumber(date) {
   const startOfYear = new Date(date.getFullYear(), 0, 1);
   const pastDaysOfYear = (date - startOfYear) / 86400000;

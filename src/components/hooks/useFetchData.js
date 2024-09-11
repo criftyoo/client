@@ -1,15 +1,27 @@
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
-const useFetchData = (fetchAction, selector) => {
+const useFetchData = (actionCreator, selector) => {
   const dispatch = useDispatch();
   const data = useSelector(selector);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    dispatch(fetchAction());
-  }, [dispatch, fetchAction]);
+    const fetchData = async () => {
+      try {
+        await dispatch(actionCreator());
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  return data;
+    fetchData();
+  }, [dispatch, actionCreator]);
+
+  return { data: Array.isArray(data) ? data : [], loading, error }; // Ensure data is an array
 };
 
 export default useFetchData;

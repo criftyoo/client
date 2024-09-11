@@ -22,7 +22,7 @@ export const reportIssues = (issueData) => async (dispatch) => {
   try {
     dispatch({ type: REPORT_ISSUES_REQUEST });
 
-    const { data } = await api.post("/report-issues", issueData);
+    const { data } = await api.post("/reportIssues/create", issueData);
 
     dispatch({ type: REPORT_ISSUES_SUCCESS, payload: data });
   } catch (error) {
@@ -38,7 +38,7 @@ export const getReportIssues = () => async (dispatch) => {
   try {
     dispatch({ type: GET_REPORT_ISSUES_REQUEST });
 
-    const { data } = await api.get("/report-issues");
+    const { data } = await api.get("/reportIssues");
 
     dispatch({ type: GET_REPORT_ISSUES_SUCCESS, payload: data });
   } catch (error) {
@@ -54,7 +54,7 @@ export const deleteReportIssues = (id) => async (dispatch) => {
   try {
     dispatch({ type: DELETE_REPORT_ISSUES_REQUEST });
 
-    await api.delete(`/report-issues/${id}`);
+    await api.delete(`/reportIssues/delete/${id}`);
 
     dispatch({ type: DELETE_REPORT_ISSUES_SUCCESS, payload: id });
   } catch (error) {
@@ -70,7 +70,7 @@ export const updateReportIssues = (id, issueData) => async (dispatch) => {
   try {
     dispatch({ type: UPDATE_REPORT_ISSUES_REQUEST });
 
-    const { data } = await api.patch(`/report-issues/${id}`, issueData);
+    const { data } = await api.patch(`/reportIssues/update/${id}`, issueData);
 
     dispatch({ type: UPDATE_REPORT_ISSUES_SUCCESS, payload: data });
   } catch (error) {

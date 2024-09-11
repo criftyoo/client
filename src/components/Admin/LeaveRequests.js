@@ -1,25 +1,31 @@
-// LeaveRequests.js
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchLeaveRequests,
-  updateLeaveRequest,
-} from "../../redux/modules/leaves"; // Adjust the import path as necessary
-import * as XLSX from "xlsx";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { fetchLeaveRequests, updateLeaveRequest } from "../../redux/modules/leaves"; // Adjust the import path as necessary
+import LoadingMessage from "../common/LoadingMessage";
+import ErrorMessage from "../common/ErrorMessage";
+import useFetchData from "../hooks/useFetchData";
+import exportToExcel from "../common/exportToExcel";
+import SelectFilter from "../common/SelectFilter";
+import SearchInput from "../common/SearchInput";
 
-const exportToExcel = (data, fileName = "leave_requests.xlsx") => {
-  const worksheet = XLSX.utils.json_to_sheet(data);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Leave Requests");
-  XLSX.writeFile(workbook, fileName);
-};
 const LeaveRequests = () => {
   const dispatch = useDispatch();
-  const { leaveRequests, status, error } = useSelector((state) => state.leaves);
+  const { data: leaveRequests, loading, error } = useFetchData(fetchLeaveRequests, (state) => state.leaves.leaveRequests);
 
-  useEffect(() => {
-    dispatch(fetchLeaveRequests());
-  }, [dispatch]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+
+  const getUniqueValues = (key) => {
+    const values = leaveRequests.map((request) => {
+      const keys = key.split('.');
+      let value = request;
+      for (const k of keys) {
+        value = value ? value[k] : 'N/A';
+      }
+      return value || 'N/A';
+    });
+    return [...new Set(values)];
+  };
 
   const handleApprove = (id) => {
     dispatch(updateLeaveRequest(id, { status: "approved" }));
@@ -29,23 +35,32 @@ const LeaveRequests = () => {
     dispatch(updateLeaveRequest(id, { status: "rejected" }));
   };
 
-  if (status === "loading") {
-    return <div>Loading...</div>;
-  }
+  const filteredLeaveRequests = leaveRequests.filter((request) => {
+    const username = request.user?.username || 'N/A';
+    const reason = request.reason || 'N/A';
+    const status = request.status || 'N/A';
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+    return (
+      (username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        reason.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        status.toLowerCase().includes(searchQuery.toLowerCase())) &&
+      (statusFilter === '' || status === statusFilter)
+    );
+  });
+
+  if (loading) return <LoadingMessage message="Loading leave requests..." />;
+  if (error) return <ErrorMessage message={`Error: ${error}`} />;
+  if (!leaveRequests.length) return <p>No leave requests found.</p>;
 
   return (
     <div className="main">
       <h2 className="form-title">Leave Requests</h2>
-      <button
-        className="btn-primary"
-        onClick={() => exportToExcel(leaveRequests)}
-      >
-        Download as Excel
-      </button>{" "}
+      <SearchInput
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        placeholder="Search by username, reason, or status..."
+      />
+      <button className="btn-primary" onClick={() => exportToExcel(filteredLeaveRequests, 'LeaveRequests.xlsx')}>Download as Excel</button>
       <table>
         <thead>
           <tr>
@@ -58,23 +73,18 @@ const LeaveRequests = () => {
           </tr>
         </thead>
         <tbody>
-          {leaveRequests.map((request) => (
+          {filteredLeaveRequests.map((request) => (
             <tr key={request._id}>
               <td>{request.user.username}</td>
               <td>{request.reason}</td>
-              <td>{request.createdAt}</td>
-              <td>{request.updatedAt}</td>
-
+              <td>{new Date(request.createdAt).toLocaleDateString()}</td>
+              <td>{new Date(request.updatedAt).toLocaleDateString()}</td>
               <td>{request.status}</td>
               <td>
                 {request.status === "pending" && (
                   <>
-                    <button onClick={() => handleApprove(request._id)}>
-                      Approve
-                    </button>
-                    <button onClick={() => handleReject(request._id)}>
-                      Reject
-                    </button>
+                    <button onClick={() => handleApprove(request._id)}>Approve</button>
+                    <button onClick={() => handleReject(request._id)}>Reject</button>
                   </>
                 )}
               </td>

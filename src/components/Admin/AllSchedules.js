@@ -1,7 +1,11 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSchedules } from '../../redux/modules/admin';
-import * as XLSX from 'xlsx';
+import SelectFilter from '../common/SelectFilter';
+import LoadingMessage from '../common/LoadingMessage';
+import ErrorMessage from '../common/ErrorMessage';
+import exportToExcel from '../common/exportToExcel';
+import SearchInput from '../common/SearchInput';
 
 const AllSchedules = () => {
   const dispatch = useDispatch();
@@ -16,7 +20,7 @@ const AllSchedules = () => {
     dispatch(fetchSchedules()); // Fetch all schedules when the component mounts
   }, [dispatch]);
 
-  const getUniqueValues = useMemo(() => (key) => {
+  const getUniqueValues = useCallback((key) => {
     const values = schedules.map((schedule) => {
       const keys = key.split('.');
       let value = schedule;
@@ -28,12 +32,8 @@ const AllSchedules = () => {
     return [...new Set(values)];
   }, [schedules]);
 
-  const handleSearch = (e) => {
-    setSearchQuery(e.target.value);
-  };
-
   const filteredSchedules = useMemo(() => schedules.filter((schedule) => {
-    const username = schedule.user?.username || 'N/A';
+    const username = schedule.user.username || 'N/A';
     const workingHours = schedule.workingHours || 'N/A';
     const offDays = schedule.offDays?.join(', ') || 'N/A';
     const week = schedule.week || 'N/A';
@@ -50,128 +50,81 @@ const AllSchedules = () => {
     );
   }), [schedules, searchQuery, usernameFilter, workingHoursFilter, offDaysFilter, weekFilter]);
 
-  const exportToExcel = () => {
-    try {
-      const worksheet = XLSX.utils.json_to_sheet(filteredSchedules.map(schedule => ({
-        Username: schedule.user?.username || 'N/A',
-        'Working Hours': schedule.workingHours || 'N/A',
-        'Off Days': schedule.offDays?.join(', ') || 'N/A',
-        Week: schedule.week || 'N/A'
-      })));
-      const workbook = XLSX.utils.book_new();
-      const weeks = [...new Set(filteredSchedules.map(schedule => schedule.week || 'N/A'))].join('-');
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Schedules');
-      XLSX.writeFile(workbook, `schedules-Weeks${weeks}.xlsx`);
-    } catch (error) {
-      console.error('Error exporting to Excel:', error);
-      alert('An error occurred while exporting to Excel. Please try again.');
-    }
-  };
-
   if (loading.schedules) {
-    return <p className="loading-message">Loading...</p>;
+    return <LoadingMessage />;
   }
 
   if (error) {
-    return <p className="error-message">An error occurred: {error}</p>;
+    return <ErrorMessage message={error} />;
   }
 
   return (
     <div className="main">
       <h2 className="form-title">Schedules History</h2>
-      <input
-        type="text"
+      <SearchInput
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
         placeholder="Search by username, working hours, off days, or week..."
-        value={searchQuery}
-        onChange={handleSearch}
-        className="search-input"
-        aria-label="Search schedules"
       />
-      <button className="btn-primary" onClick={exportToExcel}>Download as Excel</button>
-      {filteredSchedules.length > 0 ? (
-        <table className="schedule-table">
-          <thead>
-            <tr>
-              <th>
-                Username
-                <select
-                  value={usernameFilter}
-                  onChange={(e) => setUsernameFilter(e.target.value)}
-                  className="filter-dropdown"
-                  aria-label="Filter by username"
-                >
-                  <option value="">All</option>
-                  {getUniqueValues('user.username').map((value, index) => (
-                    <option key={`${value}-${index}`} value={value}>
-                      {value}
-                    </option>
-                  ))}
-                </select>
-              </th>
-              <th>
-                Working Hours
-                <select
-                  value={workingHoursFilter}
-                  onChange={(e) => setWorkingHoursFilter(e.target.value)}
-                  className="filter-dropdown"
-                  aria-label="Filter by working hours"
-                >
-                  <option value="">All</option>
-                  {getUniqueValues('workingHours').map((value, index) => (
-                    <option key={`${value}-${index}`} value={value}>
-                      {value}
-                    </option>
-                  ))}
-                </select>
-              </th>
-              <th>
-                Off Days
-                <select
-                  value={offDaysFilter}
-                  onChange={(e) => setOffDaysFilter(e.target.value)}
-                  className="filter-dropdown"
-                  aria-label="Filter by off days"
-                >
-                  <option value="">All</option>
-                  {getUniqueValues('offDays').map((value, index) => (
-                    <option key={`${value}-${index}`} value={value}>
-                      {value}
-                    </option>
-                  ))}
-                </select>
-              </th>
-              <th>
-                Week
-                <select
-                  value={weekFilter}
-                  onChange={(e) => setWeekFilter(e.target.value)}
-                  className="filter-dropdown"
-                  aria-label="Filter by week"
-                >
-                  <option value="">All</option>
-                  {getUniqueValues('week').map((value, index) => (
-                    <option key={`${value}-${index}`} value={value}>
-                      {value}
-                    </option>
-                  ))}
-                </select>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredSchedules.map((schedule) => (
+      <button className="btn-primary" onClick={() => exportToExcel(filteredSchedules)}>Download as Excel</button>
+      <table>
+        <thead>
+          <tr>
+            <th>
+              Username
+              <SelectFilter
+                value={usernameFilter}
+                onChange={(e) => setUsernameFilter(e.target.value)}
+                options={getUniqueValues('user.username')}
+                ariaLabel="Filter by username"
+              />
+            </th>
+            <th>
+              Working Hours
+              <SelectFilter
+                value={workingHoursFilter}
+                onChange={(e) => setWorkingHoursFilter(e.target.value)}
+                options={getUniqueValues('workingHours')}
+                ariaLabel="Filter by working hours"
+              />
+            </th>
+            <th>
+              Off Days
+              <SelectFilter
+                value={offDaysFilter}
+                onChange={(e) => setOffDaysFilter(e.target.value)}
+                options={getUniqueValues('offDays')}
+                ariaLabel="Filter by off days"
+              />
+            </th>
+            <th>
+              Week
+              <SelectFilter
+                value={weekFilter}
+                onChange={(e) => setWeekFilter(e.target.value)}
+                options={getUniqueValues('week')}
+                ariaLabel="Filter by week"
+              />
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredSchedules.length > 0 ? (
+            filteredSchedules.map((schedule) => (
               <tr key={schedule._id}>
                 <td>{schedule.user?.username || 'N/A'}</td>
                 <td>{schedule.workingHours || 'N/A'}</td>
                 <td>{schedule.offDays?.join(', ') || 'N/A'}</td>
                 <td>{schedule.week || 'N/A'}</td>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p>No schedules found.</p>
-      )}
+            ))
+          ) : (
+            <tr>
+              <td colSpan="4" className="no-schedules-message">No schedules found.</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
   );
 };

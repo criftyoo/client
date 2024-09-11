@@ -11,14 +11,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import ClientReportForm from "../ReportIssues/ReportIssuesForm";
 
-const ENDPOINT = "http://localhost:4000"; // Update this to your server's base URL
+const ENDPOINT = "http://localhost:4000"; 
 
 const Navbar = () => {
   const dispatch = useDispatch();
   const [toggled, setToggled] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [showForm, setShowForm] = useState(false); // State to manage form visibility
+  const [showForm, setShowForm] = useState(false); 
   const {
     user,
     isAuthenticated,
@@ -26,12 +26,10 @@ const Navbar = () => {
   } = useSelector((state) => state.users);
 
   useEffect(() => {
-    // Fetch the initial isOpenForSwap status when the component mounts
     dispatch(fetchIsOpenForSwap());
   }, [dispatch]);
 
   useEffect(() => {
-    // Synchronize the toggled state with the openForSwap value from the Redux store
     setToggled(openForSwap);
   }, [openForSwap]);
 
@@ -84,6 +82,7 @@ const Navbar = () => {
           Scheduler
         </Link>
       </h1>
+      <h1>Hello {user.username}</h1>
       <Fragment>
         <ul>
           <li>

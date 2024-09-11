@@ -5,11 +5,11 @@ import { reportIssues } from '../../redux/modules/reportIssues';
 const ClientReportForm = () => {
   const [issue, setIssue] = useState('');
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.users.user); // Get the logged-in user from the Redux store
+  const user = useSelector((state) => state.users.user); 
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(reportIssues({ user: user.username, issue })); // Use the logged-in user's username
+    dispatch(reportIssues({user, issue })); 
     setIssue('');
   };
 

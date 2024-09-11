@@ -3,17 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchSwaps, updateSwapStatus } from '../../redux/modules/admin';
 import { cancelAllSwaps } from '../../redux/modules/swap';
 import * as XLSX from 'xlsx';
+import SelectFilter from '../common/SelectFilter'; 
 
-const SelectFilter = ({ value, onChange, options }) => (
-  <select value={value} onChange={onChange} className="small-select">
-    <option value="">All</option>
-    {options.map((option, index) => (
-      <option key={`${option}-${index}`} value={option}>
-        {option}
-      </option>
-    ))}
-  </select>
-);
 
 const AllSwapRequests = () => {
   const dispatch = useDispatch();

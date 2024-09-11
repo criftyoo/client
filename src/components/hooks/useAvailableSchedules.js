@@ -77,7 +77,11 @@ const useAvailableSchedules = (schedules, users, user) => {
 
       const result = isStartTimeGreaterOrEqual(scheduleWorkingHours, requesterScheduleWorkingHours);
 
-      if (result && schedule._id === latestSchedule._id) {
+      // Check if the first off day of the available schedule is not after the requester's first off day
+      const scheduleFirstOffDay = new Date(schedule.offDays[0]);
+      const requesterFirstOffDay = new Date(requesterSchedule.offDays[0]);
+
+      if (result && schedule._id === latestSchedule._id && scheduleFirstOffDay <= requesterFirstOffDay) {
         eligibleSchedules.push(schedule);
       }
     });
