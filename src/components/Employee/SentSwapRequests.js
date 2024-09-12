@@ -96,7 +96,7 @@ const SentSwapRequests = () => {
                 <td>{formatTime(swap.updatedAt)}</td>
                 <td>{swap.status}</td>
                 <td>{swap.adminApproval}</td>
-                <td>{swap.recipientSchedule.week}</td>
+                <td>{swap.recipientSchedule?.week || "N/A"}</td>
               </tr>
             ))}
           </tbody>

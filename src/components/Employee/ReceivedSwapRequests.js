@@ -6,7 +6,6 @@ import {
   clearUploadError, // Import the action to reset the error state
 } from "../../redux/modules/admin";
 
-
 const ReceivedSwapRequests = () => {
   const dispatch = useDispatch();
   const { user, isAuthenticated } = useSelector((state) => state.users);
@@ -191,7 +190,7 @@ const ReceivedSwapRequests = () => {
                 <td style={getStatusStyle(swap.status)}>
                   {swap.adminApproval}
                 </td>
-                <td>{swap.requesterSchedule.week}</td>
+                <td>{swap.requesterSchedule?.week || "N/A"}</td>
               </tr>
             ))}
           </tbody>

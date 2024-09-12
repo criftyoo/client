@@ -39,6 +39,12 @@ const FETCH_APPROVED_SWAP_REQUESTS_FAIL = "FETCH_APPROVED_SWAP_REQUESTS_FAIL";
 
 
 const CLEAR_UPLOAD_ERROR = "CLEAR_UPLOAD_ERROR";
+const CLEAR_DUPLICATE_DATA = "CLEAR_DUPLICATE_DATA";
+
+// Clear Duplicate Data Action
+export const clearDuplicateData = () => (dispatch) => {
+  dispatch({ type: CLEAR_DUPLICATE_DATA });
+};
 
 // Upload Schedule Action
 export const uploadSchedule = (formData) => async (dispatch) => {
@@ -50,7 +56,6 @@ export const uploadSchedule = (formData) => async (dispatch) => {
       onUploadProgress: (event) => {
         if (event.total) {
           const progress = Math.round((event.loaded * 100) / event.total);
-          
           dispatch({ type: UPLOAD_SCHEDULE_PROGRESS, payload: progress });
         }
       },
@@ -58,16 +63,26 @@ export const uploadSchedule = (formData) => async (dispatch) => {
 
     dispatch({ type: UPLOAD_SCHEDULE_SUCCESS, payload: data });
   } catch (error) {
-    // Safely access the error message
     const errorMessage =
       error.response?.data?.message ||
       error.response?.data ||
       error.message ||
       "An unknown error occurred.";
-    dispatch({
-      type: UPLOAD_SCHEDULE_FAIL,
-      payload: errorMessage,
-    });
+
+    if (error.response?.status === 409) {
+      dispatch({
+        type: UPLOAD_SCHEDULE_FAIL,
+        payload: {
+          message: errorMessage,
+          duplicateData: error.response.data.duplicateSchedules,
+        },
+      });
+    } else {
+      dispatch({
+        type: UPLOAD_SCHEDULE_FAIL,
+        payload: errorMessage,
+      });
+    }
   }
 };
 
@@ -222,6 +237,7 @@ const initialState = {
   },
   uploadProgress: 0, 
   error: null,
+  duplicateData: [],
 };
 
 // Reducer
@@ -237,6 +253,7 @@ export default function reducer(state = initialState, action) {
         loading: { ...state.loading, upload: false },
         schedules: action.payload,
         uploadProgress: 0,
+        duplicateData: [],
       };
     case UPLOAD_SCHEDULE_FAIL:
       return {
@@ -244,6 +261,8 @@ export default function reducer(state = initialState, action) {
         loading: { ...state.loading, upload: false },
         error: action.payload,
         uploadProgress: 0,
+        duplicateData: action.payload.duplicateData || [], 
+
       };
 
     case FETCH_ALL_SCHEDULES_REQUEST:
@@ -367,7 +386,11 @@ export default function reducer(state = initialState, action) {
         ...state,
         error: null,
       };
-
+      case CLEAR_DUPLICATE_DATA:
+        return {
+          ...state,
+          duplicateData: [],
+        };
     default:
       return state;
   }

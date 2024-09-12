@@ -70,6 +70,7 @@ const AllSwapRequests = () => {
     try {
       await dispatch(updateSwapStatus(id, 'approved', 'Swap has been approved by the WFM', 'admin', 'approved'));
       await dispatch(cancelAllSwaps(requesterId, recipientId));
+      dispatch(fetchSwaps());
     } catch (err) {
       setActionError('Error approving swap');
       console.error('Error approving swap:', err);
@@ -79,6 +80,7 @@ const AllSwapRequests = () => {
   const handleReject = async (id) => {
     try {
       await dispatch(updateSwapStatus(id, 'declined', 'Swap has been rejected by the WFM', 'admin', 'declined'));
+      dispatch(fetchSwaps());
     } catch (err) {
       setActionError('Error rejecting swap');
       console.error('Error rejecting swap:', err);
@@ -128,7 +130,7 @@ const AllSwapRequests = () => {
   }
 
   if (error) {
-    return <div>Error fetching swaps: {error}</div>;
+    return <div>Error fetching swaps: {JSON.stringify(error)}</div>; // Convert error object to string
   }
 
   return (
@@ -182,7 +184,7 @@ const AllSwapRequests = () => {
                 <td>{`${swap.recipientSchedule.workingHours} (Week ${swap.recipientSchedule.week})`}</td>
                 <td>{swap.status}</td>
                 <td>
-                  {swap.status === 'pending' ? (
+                  {swap.adminApproval === 'pending' ? (
                     <>
                       <button onClick={() => handleAccept(swap._id, swap.requester._id, swap.recipient._id)}>Accept</button>
                       <button onClick={() => handleReject(swap._id)}>Reject</button>

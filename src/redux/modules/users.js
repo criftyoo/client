@@ -25,7 +25,9 @@ export const fetchUsersFailure = (error) => ({ type: FETCH_USERS_FAILURE, payloa
 export const fetchUsers = () => async (dispatch) => {
   dispatch(fetchUsersRequest());
   try {
-    const response = await api.get("/users/all"); // Adjust the API endpoint as needed
+    const response = await api.get("/users/all", {headers: {
+      'Cache-Control': 'no-cache'}}); 
+    
     dispatch(fetchUsersSuccess(response.data));
   } catch (error) {
     dispatch(fetchUsersFailure(error.message));

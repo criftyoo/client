@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { uploadSchedule, clearUploadError } from "../../redux/modules/admin";
+import { uploadSchedule, clearUploadError, clearDuplicateData } from "../../redux/modules/admin";
 
 const UploadSchedule = () => {
   const [file, setFile] = useState(null);
-  const [localError, setLocalError] = useState(null);
   const dispatch = useDispatch();
   
   // Access Redux state
@@ -12,17 +11,19 @@ const UploadSchedule = () => {
   const loading = useSelector((state) => state.admin.loading.upload);
   const message = useSelector((state) => state.admin.schedules.message); 
   const error = useSelector((state) => state.admin.error); 
+  const duplicateData = useSelector((state) => state.admin.duplicateData);
 
   useEffect(() => {
     return () => {
-      if (error) {
-        dispatch(clearUploadError());
-      }
+      dispatch(clearUploadError());
+      dispatch(clearDuplicateData());
     };
-  }, [dispatch, error, message, uploadProgress]);
+  }, [dispatch]);
 
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
+    dispatch(clearUploadError());
+    dispatch(clearDuplicateData());
   };
 
   const handleSubmit = async (event) => {
@@ -39,39 +40,37 @@ const UploadSchedule = () => {
     try {
       await dispatch(uploadSchedule(formData));
     } catch (err) {
-      setLocalError("An error occurred during the upload. Please try again.");
+      console.error("An error occurred during the upload. Please try again.");
     }
   };
 
-  // Function to render error messages in a table
-  const renderErrorTable = (error) => {
-    if (Array.isArray(error)) {
+  // Function to render duplicate data in a table
+  const renderDuplicateTable = (duplicates) => {
+    console.log("Rendering Duplicate Table:", duplicates); // Debugging statement
+    if (duplicates.length > 0) {
       return (
         <div>
-          <table className="error-table">
+          <h3>Duplicate Schedules</h3>
+          <table className="duplicate-table">
             <thead>
               <tr>
                 <th>Username</th>
-                <th>Status</th>
+                <th>Message</th>
               </tr>
             </thead>
             <tbody>
-              {error.map((errorMsg, index) => {
-                const [username, errorText] = errorMsg.split(", ");
-                return (
-                  <tr key={index}>
-                    <td>{username}</td>
-                    <td>{errorText}</td>
-                  </tr>
-                );
-              })}
+              {duplicates.map((duplicate, index) => (
+                <tr key={index}>
+                  <td>{duplicate.username}</td>
+                  <td>Schedule for week {duplicate.week} has already been uploaded previously</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
       );
     }
-
-    return <p className="upload-error-message">{typeof error === 'string' ? error : JSON.stringify(error)}</p>;
+    return null;
   };
 
   return (
@@ -107,12 +106,7 @@ const UploadSchedule = () => {
       </form>
 
       {message && <p className="upload-message">{message}</p>}
-      {(error || localError) && (
-        <>
-          {localError && <p className="upload-error-message">{localError}</p>}
-          {renderErrorTable(error)}
-        </>
-      )}
+      {renderDuplicateTable(duplicateData)}
 
       {uploadProgress > 0 && (
         <div className="progress">

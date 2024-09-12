@@ -8,10 +8,18 @@ const SwapRequestFormContent = ({
   loadingSwap,
   user,
 }) => {
+  // Check if the user has an approved swap
+  const hasApprovedSwap = user.swapRequests.some(request => request.status === "approved");
+
   return (
     <form onSubmit={handleSubmit}>
       <label>Select a schedule:</label>
-      {availableSchedules.length > 0 ? (
+      <p className="description">
+        Please select a schedule from the dropdown menu below to initiate a swap request.
+      </p>
+      {hasApprovedSwap ? (
+        <p>You have an approved swap and can no longer create a new swap request.</p>
+      ) : availableSchedules.length > 0 ? (
         <select
           value={selectedScheduleId}
           onChange={(e) => setSelectedScheduleId(e.target.value)}
@@ -39,7 +47,7 @@ const SwapRequestFormContent = ({
       )}
       <button
         type="submit"
-        disabled={loadingSwap || availableSchedules.length === 0}
+        disabled={loadingSwap || availableSchedules.length === 0 || hasApprovedSwap}
       >
         {loadingSwap ? "Submitting..." : "Submit"}
       </button>
