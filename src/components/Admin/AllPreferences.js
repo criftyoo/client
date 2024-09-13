@@ -2,9 +2,10 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { getAllPreferences } from '../../redux/modules/preferences';
 import * as XLSX from 'xlsx';
+import useLocalStorage from '../hooks/useLocalStorage'; // Import the custom hook
 
 const AllPreferences = () => {
-    const preferences = useSelector((state) => state.preferences.preferences);
+    const [preferences, setPreferences] = useLocalStorage('preferences', []);
     const loading = useSelector((state) => state.preferences.loading);
     const error = useSelector((state) => state.preferences.error);
     const dispatch = useDispatch();
@@ -12,6 +13,14 @@ const AllPreferences = () => {
     useEffect(() => {
         dispatch(getAllPreferences());
     }, [dispatch]);
+
+    const preferencesFromStore = useSelector((state) => state.preferences.preferences);
+
+    useEffect(() => {
+        if (preferencesFromStore.length > 0) {
+            setPreferences(preferencesFromStore);
+        }
+    }, [preferencesFromStore, setPreferences]);
 
     const exportToExcel = () => {
         try {

@@ -28,7 +28,7 @@
   },
   "scripts": {
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
+    "deploy": "gh-pages -d build -b testing",
     "start": "cross-env NODE_OPTIONS=--trace-deprecation react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

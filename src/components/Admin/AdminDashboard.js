@@ -1,5 +1,5 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import React,{useEffect} from 'react';
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import UploadSchedule from './UploadSchedule';
 import AllSchedules from './AllSchedules';
 import Sidebar from '../common/Sidebar';
@@ -7,8 +7,21 @@ import AllSwapRequests from './AllSwapRequests';
 import AllPreferences from './AllPreferences';
 import LeaveRequests from './LeaveRequests';
 import AdminNewsPage from './AdminNewsPage'; // Import AdminNewsPage
+import useLocalStorage from '../hooks/useLocalStorage'; // Import the custom hook
 
 const AdminDashboard = () => {
+  const [selectedRoute, setSelectedRoute] = useLocalStorage('selectedRoute', 'upload-schedule');
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (location.pathname === '/') {
+      navigate(selectedRoute);
+    } else {
+      setSelectedRoute(location.pathname);
+    }
+  }, [location, navigate, selectedRoute, setSelectedRoute]);
+
   return (
     <div className='dashboard'>
       <Sidebar />
