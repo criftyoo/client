@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { uploadSchedule, clearUploadError, clearDuplicateData } from "../../redux/modules/admin";
+import usePersistedState from "../hooks/usePersistedState"; // Import the custom hook
 
 const UploadSchedule = () => {
-  const [file, setFile] = useState(null);
+  const [file, setFile] = usePersistedState('uploadFile', null); // Use usePersistedState for file
   const dispatch = useDispatch();
   
-  // Access Redux state
-  const uploadProgress = useSelector((state) => state.admin.uploadProgress);
-  const loading = useSelector((state) => state.admin.loading.upload);
-  const message = useSelector((state) => state.admin.schedules.message); 
+  const uploadProgress = useSelector((state) => state.admin.uploadProgress || 0);
+  const loading = useSelector((state) => state.admin.loading?.upload || false);
+  const message = useSelector((state) => state.admin.schedules?.message || ''); 
   const error = useSelector((state) => state.admin.error); 
-  const duplicateData = useSelector((state) => state.admin.duplicateData);
+  const duplicateData = useSelector((state) => state.admin.duplicateData || []);
 
   useEffect(() => {
     return () => {

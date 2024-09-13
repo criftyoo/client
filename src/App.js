@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./App.css";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { Fragment } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Landing from "./components/common/Landing";
 import Register from "./components/Users/Register";
 import Login from "./components/Users/Login";
@@ -18,7 +18,8 @@ import SwapRequestForm from "./components/Employee/SwapRequestForm";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import EmployeeDashboard from "./components/Employee/EmployeeDashboard";
 import PrivateRoute from "./components/common/PrivateRoute";
-import Notification from "./components/common/Notification"; // Import Notification component
+import Notification from "./components/common/Notification";
+import { loadUser } from "./redux/modules/users"; // Import loadUser action
 
 const options = {
   position: positions.BOTTOM_RIGHT,
@@ -35,7 +36,7 @@ function Main() {
     <>
       <Alert />
       {!hideNavbarPaths.includes(location.pathname) && <Navbar />}
-      <Notification /> {/* Add Notification component */}
+      <Notification />
       <ErrorBoundary>
         <Routes>
           <Route exact path="/" element={<Landing />} />
@@ -84,6 +85,12 @@ function Main() {
 }
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(loadUser());
+  }, [dispatch]);
+
   return (
     <Provider store={store}>
       <BrowserRouter>

@@ -1,5 +1,6 @@
 {
   "name": "client",
+  "homepage": "https://criftyoo.github.io/client",
   "version": "0.1.0",
   "main": "main.js",
   "private": true,
@@ -28,7 +29,7 @@
   },
   "scripts": {
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build -b testing",
+    "deploy": "gh-pages -d build -b gh-pages",
     "start": "cross-env NODE_OPTIONS=--trace-deprecation react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

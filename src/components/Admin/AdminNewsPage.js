@@ -2,14 +2,14 @@ import React, { useEffect } from "react";
 import NewsForm from "./NewsForm";
 import NewsListAdmin from "./NewsListAdmin";
 import styles from '../../News.module.css';
-import useLocalStorage from '../hooks/useLocalStorage'; // Import the custom hook
+import usePersistedState from '../hooks/usePersistedState'; // Import the custom hook
 
 const AdminNewsPage = () => {
-  const [newsFormData, setNewsFormData] = useLocalStorage('newsFormData', {
+  const [newsFormData, setNewsFormData] = usePersistedState('newsFormData', {
     title: '',
     content: ''
   });
-  const [newsList, setNewsList] = useLocalStorage('newsList', []);
+  const [newsList, setNewsList] = usePersistedState('newsList', []);
 
   // Function to handle form submission
   const handleFormSubmit = (formData) => {

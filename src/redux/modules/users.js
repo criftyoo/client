@@ -21,13 +21,10 @@ export const fetchUsersSuccess = (users) => ({ type: FETCH_USERS_SUCCESS, payloa
 export const fetchUsersFailure = (error) => ({ type: FETCH_USERS_FAILURE, payload: error });
 
 // Thunk Action to fetch users
-
 export const fetchUsers = () => async (dispatch) => {
   dispatch(fetchUsersRequest());
   try {
-    const response = await api.get("/users/all", {headers: {
-      'Cache-Control': 'no-cache'}}); 
-    
+    const response = await api.get("/users/all", { headers: { 'Cache-Control': 'no-cache' } });
     dispatch(fetchUsersSuccess(response.data));
   } catch (error) {
     dispatch(fetchUsersFailure(error.message));
@@ -35,6 +32,11 @@ export const fetchUsers = () => async (dispatch) => {
 };
 
 export const loadUser = () => async (dispatch) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    setAuthToken(token);
+  }
+
   try {
     const res = await api.get("/users/me");
     dispatch({ type: USER_LOADED, payload: res.data });
@@ -47,6 +49,7 @@ export function register(formData) {
   return async function registerThunk(dispatch) {
     try {
       const res = await api.post("/users/register", formData);
+      localStorage.setItem("token", res.data.token);
       dispatch({ type: REGISTER_SUCCESS, payload: res.data });
       dispatch(loadUser());
     } catch (error) {
@@ -70,9 +73,9 @@ export function register(formData) {
 export const login = (formData) => async (dispatch) => {
   try {
     const res = await api.post("/users/login", formData);
+    localStorage.setItem("token", res.data.token);
     dispatch({ type: LOGIN_SUCCESS, payload: res.data });
     dispatch(loadUser());
-    
   } catch (error) {
     if (error.response && error.response.data.errors) {
       const errors = error.response.data.errors;
@@ -115,6 +118,7 @@ export const updateOpenForSwap = (formData) => async (dispatch) => {
     });
   }
 };
+
 export const fetchIsOpenForSwap = () => async (dispatch) => {
   try {
     const res = await api.get("/users/isOpenForSwap");
@@ -125,6 +129,8 @@ export const fetchIsOpenForSwap = () => async (dispatch) => {
 };
 
 export const logout = () => (dispatch) => {
+  localStorage.removeItem("token");
+  setAuthToken();
   dispatch({ type: LOGOUT });
 };
 
@@ -134,7 +140,7 @@ const initialState = {
   isOpenForSwap: false,
   loading: true,
   user: null,
-  users: [], 
+  users: [],
   usersLoading: false,
   usersError: null,
 };
@@ -187,7 +193,7 @@ export default function reducer(state = initialState, action) {
         ...state,
         loading: false,
       };
-      case FETCH_USERS_REQUEST:
+    case FETCH_USERS_REQUEST:
       return {
         ...state,
         usersLoading: true,

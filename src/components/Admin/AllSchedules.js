@@ -1,40 +1,36 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useEffect, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSchedules } from '../../redux/modules/admin';
 import * as XLSX from 'xlsx';
-
-const FilterDropdown = ({ value, onChange, options, ariaLabel }) => (
-  <select value={value} onChange={onChange} className="filter-dropdown" aria-label={ariaLabel}>
-    <option value="">All</option>
-    {options.map((option, index) => (
-      <option key={`${option}-${index}`} value={option}>
-        {option}
-      </option>
-    ))}
-  </select>
-);
+import FilterDropdown from '../common/FilterDropdown';
+import usePersistedState from '../hooks/usePersistedState'; // Import the custom hook
 
 const AllSchedules = () => {
   const dispatch = useDispatch();
   const { schedules = [], loading, error } = useSelector((state) => state.admin); // Default to an empty array
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filters, setFilters] = useState({
+  const [searchQuery, setSearchQuery] = usePersistedState('searchQuery', ''); // Use usePersistedState for searchQuery
+  const [filters, setFilters] = usePersistedState('filters', {
     username: '',
     workingHours: '',
     offDays: '',
-    week: ''
-  });
+    week: '',
+    skill: '',
+    marketPlace: ''
+  }); // Use usePersistedState for filters
 
   useEffect(() => {
     dispatch(fetchSchedules()); // Fetch all schedules when the component mounts
   }, [dispatch]);
 
   const getUniqueValues = useCallback((key) => {
-    const values = Array.isArray(schedules) ? schedules.map((schedule) => {
+    const values = Array.isArray(schedules) ? schedules.flatMap((schedule) => {
       const keys = key.split('.');
       let value = schedule;
       for (const k of keys) {
         value = value ? value[k] : 'N/A';
+      }
+      if (Array.isArray(value)) {
+        return value;
       }
       return value || 'N/A';
     }) : [];
@@ -57,7 +53,7 @@ const AllSchedules = () => {
     return schedules.filter((schedule) => {
       const { user, workingHours, offDays, week } = schedule;
       const username = user?.username || 'N/A';
-      const offDaysStr = offDays?.join(', ') || 'N/A';
+      const offDaysStr = Array.isArray(offDays) ? offDays.join(', ') : offDays || 'N/A';
       const weekStr = week || 'N/A';
 
       return (
@@ -67,8 +63,10 @@ const AllSchedules = () => {
           weekStr.toLowerCase().includes(searchQuery.toLowerCase())) &&
         (filters.username === '' || username === filters.username) &&
         (filters.workingHours === '' || workingHours === filters.workingHours) &&
-        (filters.offDays === '' || offDaysStr === filters.offDays) &&
-        (filters.week === '' || weekStr === filters.week)
+        (filters.offDays === '' || offDaysStr.includes(filters.offDays)) &&
+        (filters.week === '' || weekStr === filters.week) &&
+        (filters.skill === '' || schedule.skill === filters.skill) &&
+        (filters.marketPlace === '' || schedule.marketPlace === filters.marketPlace)
       );
     });
   }, [schedules, searchQuery, filters]);
@@ -78,7 +76,7 @@ const AllSchedules = () => {
       const worksheet = XLSX.utils.json_to_sheet(filteredSchedules.map(schedule => ({
         Username: schedule.user?.username || 'N/A',
         'Working Hours': schedule.workingHours || 'N/A',
-        'Off Days': schedule.offDays?.join(', ') || 'N/A',
+        'Off Days': Array.isArray(schedule.offDays) ? schedule.offDays.join(', ') : schedule.offDays || 'N/A',
         Week: schedule.week || 'N/A'
       })));
       const workbook = XLSX.utils.book_new();
@@ -96,7 +94,7 @@ const AllSchedules = () => {
   }
 
   if (error) {
-    return <p className="error-message">An error occurred: {JSON.stringify(error)}</p>; // Convert error object to string
+    return <p className="error-message">An error occurred: {JSON.stringify(error)}</p>; 
   }
 
   return (
@@ -150,6 +148,24 @@ const AllSchedules = () => {
                 ariaLabel="Filter by week"
               />
             </th>
+            <th>
+              Skill
+              <FilterDropdown
+                value={filters.skill}
+                onChange={handleFilterChange('skill')}
+                options={getUniqueValues('skill')}
+                ariaLabel="Filter by skill"
+              />
+            </th>
+            <th>
+              Market Place
+              <FilterDropdown
+                value={filters.marketPlace}
+                onChange={handleFilterChange('marketPlace')}
+                options={getUniqueValues('marketPlace')}
+                ariaLabel="Filter by market place"
+              />
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -158,13 +174,15 @@ const AllSchedules = () => {
               <tr key={schedule._id}>
                 <td>{schedule.user?.username || 'N/A'}</td>
                 <td>{schedule.workingHours || 'N/A'}</td>
-                <td>{schedule.offDays?.join(', ') || 'N/A'}</td>
+                <td>{Array.isArray(schedule.offDays) ? schedule.offDays.join(', ') : schedule.offDays || 'N/A'}</td>
                 <td>{schedule.week || 'N/A'}</td>
+                <td>{schedule.skill || 'N/A'}</td>
+                <td>{schedule.marketPlace || 'N/A'}</td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="4">No schedules found</td>
+              <td colSpan="6">No schedules found</td>
             </tr>
           )}
         </tbody>

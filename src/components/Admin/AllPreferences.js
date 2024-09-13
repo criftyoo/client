@@ -1,14 +1,22 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { getAllPreferences } from '../../redux/modules/preferences';
 import * as XLSX from 'xlsx';
-import useLocalStorage from '../hooks/useLocalStorage'; // Import the custom hook
+import usePersistedState from '../hooks/usePersistedState';
+import FilterDropdown from '../common/FilterDropdown';
 
 const AllPreferences = () => {
-    const [preferences, setPreferences] = useLocalStorage('preferences', []);
+    const [preferences, setPreferences] = usePersistedState('preferences', []);
     const loading = useSelector((state) => state.preferences.loading);
     const error = useSelector((state) => state.preferences.error);
     const dispatch = useDispatch();
+
+    const [filters, setFilters] = usePersistedState('filters', {
+        username: '',
+        preferredShift: '',
+        preferredOffDays: '',
+        week: ''
+    });
 
     useEffect(() => {
         dispatch(getAllPreferences());
@@ -22,17 +30,56 @@ const AllPreferences = () => {
         }
     }, [preferencesFromStore, setPreferences]);
 
+    const getUniqueValues = useCallback((key) => {
+        const values = Array.isArray(preferences) ? preferences.flatMap((preference) => {
+            const keys = key.split('.');
+            let value = preference;
+            for (const k of keys) {
+                value = value ? value[k] : 'N/A';
+            }
+            if (Array.isArray(value)) {
+                return value;
+            }
+            return value || 'N/A';
+        }) : [];
+        return [...new Set(values)];
+    }, [preferences]);
+
+    const handleFilterChange = (filterName) => (e) => {
+        setFilters((prevFilters) => ({
+            ...prevFilters,
+            [filterName]: e.target.value
+        }));
+    };
+
+    const filteredPreferences = useMemo(() => {
+        if (!Array.isArray(preferences)) return [];
+        return preferences.filter((preference) => {
+            const { user, preferredShift, preferredOffDays, week } = preference;
+            const username = user?.username || 'N/A';
+            const preferredOffDaysStr = Array.isArray(preferredOffDays) ? preferredOffDays.join(', ') : preferredOffDays || 'N/A';
+            const weekStr = week || 'N/A';
+
+            return (
+                (filters.username === '' || username === filters.username) &&
+                (filters.preferredShift === '' || preferredShift === filters.preferredShift) &&
+                (filters.preferredOffDays === '' || preferredOffDaysStr.includes(filters.preferredOffDays)) &&
+                (filters.week === '' || weekStr === filters.week)
+            );
+        });
+    }, [preferences, filters]);
+
     const exportToExcel = () => {
         try {
-            const worksheet = XLSX.utils.json_to_sheet(preferences.map(preference => ({
+            const worksheet = XLSX.utils.json_to_sheet(filteredPreferences.map(preference => ({
                 Username: preference.user.username,
                 'Preferred Shift': preference.preferredShift,
-                'Preferred Off Days': preference.preferredOffDays.join(', '),
+                'Preferred Off Days': Array.isArray(preference.preferredOffDays) ? preference.preferredOffDays.join(', ') : preference.preferredOffDays || 'N/A',
                 'Creation Date': new Date(preference.createdAt).toLocaleDateString(),
                 Week: preference.week
             })));
             const workbook = XLSX.utils.book_new();
-            const weeks = [...new Set(preferences.map(preference => preference.week))].join('-');
+            const weeks = [...new Set(filteredPreferences.map(preference => preference.week))].join('-');
             XLSX.utils.book_append_sheet(workbook, worksheet, 'Preferences');
             XLSX.writeFile(workbook, `Preferences-Weeks${weeks}.xlsx`);
         } catch (error) {
@@ -52,19 +99,60 @@ const AllPreferences = () => {
             <table>
                 <thead>
                     <tr>
-                        <th>Username</th>
-                        <th>Preferred Shift</th>
-                        <th>Preferred Off Days</th>
-                        <th>Creation Date</th>
-                        <th>Week</th>
+                        <th>
+                            Username
+                            <FilterDropdown
+                                value={filters.username}
+                                onChange={handleFilterChange('username')}
+                                options={getUniqueValues('user.username')}
+                                ariaLabel="Filter by username"
+                            />
+                        </th>
+                        <th>
+                            Preferred Shift
+                            <FilterDropdown
+                                value={filters.preferredShift}
+                                onChange={handleFilterChange('preferredShift')}
+                                options={getUniqueValues('preferredShift')}
+                                ariaLabel="Filter by preferred shift"
+                            />
+                        </th>
+
+                        <th>
+                            Preferred Off Days
+                            <FilterDropdown
+                                value={filters.preferredOffDays}
+                                onChange={handleFilterChange('preferredOffDays')}
+                                options={getUniqueValues('preferredOffDays')}
+                                ariaLabel="Filter by preferred off days"
+                            />
+                        </th>
+                        <th>
+                            Creation Date
+                            <FilterDropdown
+                                value={filters.createdAt}
+                                onChange={handleFilterChange('createdAt')}
+                                options={getUniqueValues('createdAt')}
+                                ariaLabel="Filter by creation date"
+                            />
+                        </th>                        
+                        <th>
+                            Week
+                            <FilterDropdown
+                                value={filters.week}
+                                onChange={handleFilterChange('week')}
+                                options={getUniqueValues('week')}
+                                ariaLabel="Filter by week"
+                            />
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
-                    {preferences.map((preference) => (
+                    {filteredPreferences.map((preference) => (
                         <tr key={preference._id}>
                             <td>{preference.user.username}</td>
                             <td>{preference.preferredShift}</td>
-                            <td>{preference.preferredOffDays.join(', ')}</td>
+                            <td>{Array.isArray(preference.preferredOffDays) ? preference.preferredOffDays.join(', ') : preference.preferredOffDays || 'N/A'}</td>
                             <td>{new Date(preference.createdAt).toLocaleDateString()}</td>
                             <td>{preference.week}</td>
                         </tr>

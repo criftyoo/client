@@ -83,7 +83,6 @@ const Navbar = () => {
         </Link>
         
       </h1>
-      <span>Hello {user.username}</span>
       <Fragment>
         <ul>
           <li>
@@ -124,6 +123,7 @@ const Navbar = () => {
           </li>
           {isAuthenticated && user && user.role === "employee" && (
             <>
+                  <span>Hello {user.username}</span>
               <li>
                 <button
                   className={`toggle-btn ${toggled ? "toggled" : ""}`}

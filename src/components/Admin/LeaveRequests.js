@@ -1,4 +1,3 @@
-// LeaveRequests.js
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -6,6 +5,7 @@ import {
   updateLeaveRequest,
 } from "../../redux/modules/leaves"; // Adjust the import path as necessary
 import * as XLSX from "xlsx";
+import usePersistedState from "../hooks/usePersistedState"; // Import the custom hook
 
 const exportToExcel = (data, fileName = "leave_requests.xlsx") => {
   const worksheet = XLSX.utils.json_to_sheet(data);
@@ -13,13 +13,23 @@ const exportToExcel = (data, fileName = "leave_requests.xlsx") => {
   XLSX.utils.book_append_sheet(workbook, worksheet, "Leave Requests");
   XLSX.writeFile(workbook, fileName);
 };
+
 const LeaveRequests = () => {
   const dispatch = useDispatch();
-  const { leaveRequests, status, error } = useSelector((state) => state.leaves);
+  const { status, error } = useSelector((state) => state.leaves);
+  const [leaveRequests, setLeaveRequests] = usePersistedState('leaveRequests', []);
 
   useEffect(() => {
     dispatch(fetchLeaveRequests());
   }, [dispatch]);
+
+  const leaveRequestsFromStore = useSelector((state) => state.leaves.leaveRequests);
+
+  useEffect(() => {
+    if (leaveRequestsFromStore.length > 0) {
+      setLeaveRequests(leaveRequestsFromStore);
+    }
+  }, [leaveRequestsFromStore, setLeaveRequests]);
 
   const handleApprove = (id) => {
     dispatch(updateLeaveRequest(id, { status: "approved" }));
@@ -45,7 +55,7 @@ const LeaveRequests = () => {
         onClick={() => exportToExcel(leaveRequests)}
       >
         Download as Excel
-      </button>{" "}
+      </button>
       <table>
         <thead>
           <tr>
@@ -64,7 +74,6 @@ const LeaveRequests = () => {
               <td>{request.reason}</td>
               <td>{request.createdAt}</td>
               <td>{request.updatedAt}</td>
-
               <td>{request.status}</td>
               <td>
                 {request.status === "pending" && (

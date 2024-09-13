@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useEffect, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSwaps, updateSwapStatus } from '../../redux/modules/admin';
 import { cancelAllSwaps } from '../../redux/modules/swap';
 import * as XLSX from 'xlsx';
+import usePersistedState from '../hooks/usePersistedState'; // Import the custom hook
 
 const SelectFilter = ({ value, onChange, options }) => (
   <select value={value} onChange={onChange} className="small-select">
@@ -21,14 +22,14 @@ const AllSwapRequests = () => {
   const loading = useSelector((state) => state.admin.loading.allSwaps);
   const error = useSelector((state) => state.admin.error);
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [requesterFilter, setRequesterFilter] = useState('');
-  const [recipientFilter, setRecipientFilter] = useState('');
-  const [requesterScheduleFilter, setRequesterScheduleFilter] = useState('');
-  const [recipientScheduleFilter, setRecipientScheduleFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [approvalFilter, setApprovalFilter] = useState('');
-  const [actionError, setActionError] = useState(null);
+  const [searchQuery, setSearchQuery] = usePersistedState('searchQuery', '');
+  const [requesterFilter, setRequesterFilter] = usePersistedState('requesterFilter', '');
+  const [recipientFilter, setRecipientFilter] = usePersistedState('recipientFilter', '');
+  const [requesterScheduleFilter, setRequesterScheduleFilter] = usePersistedState('requesterScheduleFilter', '');
+  const [recipientScheduleFilter, setRecipientScheduleFilter] = usePersistedState('recipientScheduleFilter', '');
+  const [statusFilter, setStatusFilter] = usePersistedState('statusFilter', '');
+  const [approvalFilter, setApprovalFilter] = usePersistedState('approvalFilter', '');
+  const [actionError, setActionError] = usePersistedState('actionError', null);
 
   useEffect(() => {
     const fetchData = async () => {
