@@ -17,7 +17,7 @@ import AdminDashboard from "./components/Admin/AdminDashboard";
 import SwapRequestForm from "./components/Employee/SwapRequestForm";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import EmployeeDashboard from "./components/Employee/EmployeeDashboard";
-import PrivateRoute from "./components/common/PrivateRoute";
+import PrivateRouteWithPersist from "./components/common/PrivateRoute"; // Import updated PrivateRouteWithPersist
 import Notification from "./components/common/Notification";
 import { loadUser } from "./redux/modules/users"; // Import loadUser action
 
@@ -46,36 +46,36 @@ function Main() {
             exact
             path="/admin/*"
             element={
-              <PrivateRoute role="admin">
+              <PrivateRouteWithPersist role="admin">
                 <AdminDashboard />
-              </PrivateRoute>
+              </PrivateRouteWithPersist>
             }
           />
           <Route
             exact
             path="/employee/*"
             element={
-              <PrivateRoute role="employee">
+              <PrivateRouteWithPersist role="employee">
                 <EmployeeDashboard />
-              </PrivateRoute>
+              </PrivateRouteWithPersist>
             }
           />
           <Route
             exact
             path="/home"
             element={
-              <PrivateRoute>
+              <PrivateRouteWithPersist>
                 <Swapper />
-              </PrivateRoute>
+              </PrivateRouteWithPersist>
             }
           />
           <Route
             exact
             path="/requester"
             element={
-              <PrivateRoute>
+              <PrivateRouteWithPersist>
                 <SwapRequestForm />
-              </PrivateRoute>
+              </PrivateRouteWithPersist>
             }
           />
         </Routes>

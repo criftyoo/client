@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../../redux/modules/users";
+import usePersistedState from "../hooks/usePersistedState"; // Import the custom hook
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -14,8 +15,11 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  // Use the custom hook to persist the token
+  const [token, setToken] = usePersistedState("token", null);
+
   // Get authentication state and user role from Redux store
-  const isAuthenticated = useSelector((state) => state.users.isAuthenticated);
+  const isAuthenticated = useSelector((state) => state?.users?.isAuthenticated);
   const userRole = useSelector((state) => state.users?.user?.role);
 
   const onChange = (e) =>
