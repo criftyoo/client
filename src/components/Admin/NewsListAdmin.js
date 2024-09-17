@@ -1,19 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useState,useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllNews, deleteNews, updateNews } from "../../redux/modules/news";
 import styles from '../../News.module.css';
+import useFetchData from "../hooks/useFetchData"; // Import the custom hook
 
 const NewsListAdmin = () => {
   const dispatch = useDispatch();
-  const { news, loading, error } = useSelector((state) => state.news);
+  const news = useFetchData(fetchAllNews, (state) => state.news.news); // Use useFetchData for fetching news
+  const loading = useSelector((state) => state.news.loading);
+  const error = useSelector((state) => state.news.error);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [currentNews, setCurrentNews] = useState({ _id: "", title: "", description: "" });
   const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(() => {
-    dispatch(fetchAllNews());
-    setErrorMessage(""); // Reset error message when component mounts
-  }, [dispatch]);
 
   useEffect(() => {
     if (error) {

@@ -7,10 +7,6 @@ import FilterDropdown from '../common/FilterDropdown';
 
 const AllPreferences = () => {
     const [preferences, setPreferences] = usePersistedState('preferences', []);
-    const loading = useSelector((state) => state.preferences.loading);
-    const error = useSelector((state) => state.preferences.error);
-    const dispatch = useDispatch();
-
     const [filters, setFilters] = usePersistedState('filters', {
         username: '',
         preferredShift: '',
@@ -18,42 +14,43 @@ const AllPreferences = () => {
         week: ''
     });
 
+    const dispatch = useDispatch();
+    const loading = useSelector((state) => state.preferences.loading);
+    const error = useSelector((state) => state.preferences.error);
+    const preferencesFromStore = useSelector((state) => state.preferences.preferences);
+
     useEffect(() => {
         dispatch(getAllPreferences());
     }, [dispatch]);
 
-    const preferencesFromStore = useSelector((state) => state.preferences.preferences);
-
     useEffect(() => {
         if (preferencesFromStore.length > 0) {
+            console.log('Preferences from store:', preferencesFromStore); // Debugging statement
             setPreferences(preferencesFromStore);
         }
     }, [preferencesFromStore, setPreferences]);
 
     const getUniqueValues = useCallback((key) => {
-        const values = Array.isArray(preferences) ? preferences.flatMap((preference) => {
+        const values = preferences.flatMap((preference) => {
             const keys = key.split('.');
             let value = preference;
             for (const k of keys) {
                 value = value ? value[k] : 'N/A';
             }
-            if (Array.isArray(value)) {
-                return value;
-            }
-            return value || 'N/A';
-        }) : [];
+            return Array.isArray(value) ? value : value || 'N/A';
+        });
         return [...new Set(values)];
     }, [preferences]);
 
-    const handleFilterChange = (filterName) => (e) => {
+    const handleFilterChange = useCallback((filterName) => (e) => {
         setFilters((prevFilters) => ({
             ...prevFilters,
             [filterName]: e.target.value
         }));
-    };
+    }, [setFilters]);
 
     const filteredPreferences = useMemo(() => {
-        if (!Array.isArray(preferences)) return [];
+        console.log('Filtering preferences with filters:', filters); // Debugging statement
         return preferences.filter((preference) => {
             const { user, preferredShift, preferredOffDays, week } = preference;
             const username = user?.username || 'N/A';
@@ -69,7 +66,7 @@ const AllPreferences = () => {
         });
     }, [preferences, filters]);
 
-    const exportToExcel = () => {
+    const exportToExcel = useCallback(() => {
         try {
             const worksheet = XLSX.utils.json_to_sheet(filteredPreferences.map(preference => ({
                 Username: preference.user.username,
@@ -86,11 +83,13 @@ const AllPreferences = () => {
             console.error('Error exporting to Excel:', error);
             alert('An error occurred while exporting to Excel. Please try again.');
         }
-    };
+    }, [filteredPreferences]);
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error}</p>;
     if (!preferences.length) return <p>No preferences found.</p>;
+
+    console.log('Filtered Preferences:', filteredPreferences); // Debugging statement
 
     return (
         <div className='main'>
@@ -117,7 +116,6 @@ const AllPreferences = () => {
                                 ariaLabel="Filter by preferred shift"
                             />
                         </th>
-
                         <th>
                             Preferred Off Days
                             <FilterDropdown
@@ -127,15 +125,6 @@ const AllPreferences = () => {
                                 ariaLabel="Filter by preferred off days"
                             />
                         </th>
-                        <th>
-                            Creation Date
-                            <FilterDropdown
-                                value={filters.createdAt}
-                                onChange={handleFilterChange('createdAt')}
-                                options={getUniqueValues('createdAt')}
-                                ariaLabel="Filter by creation date"
-                            />
-                        </th>                        
                         <th>
                             Week
                             <FilterDropdown

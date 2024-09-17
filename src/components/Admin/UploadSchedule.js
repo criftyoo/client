@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { uploadSchedule, clearUploadError, clearDuplicateData } from "../../redux/modules/admin";
-import usePersistedState from "../hooks/usePersistedState"; // Import the custom hook
+import useLocalStorage from "../hooks/useLocalStorage"; // Import the custom hook
 
 const UploadSchedule = () => {
-  const [file, setFile] = usePersistedState('uploadFile', null); // Use usePersistedState for file
+  const [file, setFile] = useLocalStorage('uploadFile', null); // Use useLocalStorage for file
   const dispatch = useDispatch();
   
   const uploadProgress = useSelector((state) => state.admin.uploadProgress || 0);

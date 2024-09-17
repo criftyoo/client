@@ -17,7 +17,7 @@ import AdminDashboard from "./components/Admin/AdminDashboard";
 import SwapRequestForm from "./components/Employee/SwapRequestForm";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import EmployeeDashboard from "./components/Employee/EmployeeDashboard";
-import PrivateRouteWithPersist from "./components/common/PrivateRoute"; // Import updated PrivateRouteWithPersist
+import PrivateRoute from "./components/common/PrivateRoute"; // Import updated PrivateRoute
 import Notification from "./components/common/Notification";
 import { loadUser } from "./redux/modules/users"; // Import loadUser action
 
@@ -46,36 +46,36 @@ function Main() {
             exact
             path="/admin/*"
             element={
-              <PrivateRouteWithPersist role="admin">
+              <PrivateRoute role="admin">
                 <AdminDashboard />
-              </PrivateRouteWithPersist>
+              </PrivateRoute>
             }
           />
           <Route
             exact
             path="/employee/*"
             element={
-              <PrivateRouteWithPersist role="employee">
+              <PrivateRoute role="employee">
                 <EmployeeDashboard />
-              </PrivateRouteWithPersist>
+              </PrivateRoute>
             }
           />
           <Route
             exact
             path="/home"
             element={
-              <PrivateRouteWithPersist>
+              <PrivateRoute>
                 <Swapper />
-              </PrivateRouteWithPersist>
+              </PrivateRoute>
             }
           />
           <Route
             exact
             path="/requester"
             element={
-              <PrivateRouteWithPersist>
+              <PrivateRoute>
                 <SwapRequestForm />
-              </PrivateRouteWithPersist>
+              </PrivateRoute>
             }
           />
         </Routes>
@@ -93,7 +93,7 @@ function App() {
 
   return (
     <Provider store={store}>
-      <BrowserRouter>
+      <BrowserRouter basename="/client">
         <AlertProvider template={AlertTemplate} {...options}>
           <Main />
         </AlertProvider>
