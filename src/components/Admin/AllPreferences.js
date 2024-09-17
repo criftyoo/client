@@ -47,6 +47,7 @@ const AllPreferences = () => {
             ...prevFilters,
             [filterName]: e.target.value
         }));
+        console.log(`Filter ${filterName} changed to:`, e.target.value); // Debugging statement
     }, [setFilters]);
 
     const filteredPreferences = useMemo(() => {
