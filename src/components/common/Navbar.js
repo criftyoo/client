@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import ClientReportForm from "../ReportIssues/ReportIssuesForm";
 
-const ENDPOINT = "http://localhost:4000"; 
+const ENDPOINT = "https://scheduler-server-a6deb2hrgug8evbw.westeurope-01.azurewebsites.net"; 
 
 const Navbar = () => {
   const dispatch = useDispatch();
