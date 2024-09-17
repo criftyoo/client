@@ -20,7 +20,9 @@ const AllPreferences = () => {
     const preferencesFromStore = useSelector((state) => state.preferences.preferences);
 
     useEffect(() => {
-        dispatch(getAllPreferences());
+        dispatch(getAllPreferences()).catch(err => {
+            console.error('Error fetching preferences:', err); // Error handling
+        });
     }, [dispatch]);
 
     useEffect(() => {
