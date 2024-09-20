@@ -54,19 +54,24 @@ const AllPreferences = () => {
 
     const filteredPreferences = useMemo(() => {
         console.log('Filtering preferences with filters:', filters); // Debugging statement
-        return preferences.filter((preference) => {
-            const { user, preferredShift, preferredOffDays, week } = preference;
-            const username = user?.username || 'N/A';
-            const preferredOffDaysStr = Array.isArray(preferredOffDays) ? preferredOffDays.join(', ') : preferredOffDays || 'N/A';
-            const weekStr = week || 'N/A';
+        try {
+            return preferences.filter((preference) => {
+                const { user, preferredShift, preferredOffDays, week } = preference;
+                const username = user?.username || 'N/A';
+                const preferredOffDaysStr = Array.isArray(preferredOffDays) ? preferredOffDays.join(', ') : preferredOffDays || 'N/A';
+                const weekStr = week || 'N/A';
 
-            return (
-                (filters.username === '' || username === filters.username) &&
-                (filters.preferredShift === '' || preferredShift === filters.preferredShift) &&
-                (filters.preferredOffDays === '' || preferredOffDaysStr.includes(filters.preferredOffDays)) &&
-                (filters.week === '' || weekStr === filters.week)
-            );
-        });
+                return (
+                    (filters.username === '' || username === filters.username) &&
+                    (filters.preferredShift === '' || preferredShift === filters.preferredShift) &&
+                    (filters.preferredOffDays === '' || preferredOffDaysStr.includes(filters.preferredOffDays)) &&
+                    (filters.week === '' || weekStr === filters.week)
+                );
+            });
+        } catch (error) {
+            console.error('Error filtering preferences:', error);
+            return [];
+        }
     }, [preferences, filters]);
 
     const exportToExcel = useCallback(() => {
