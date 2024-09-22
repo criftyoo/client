@@ -4,7 +4,6 @@ import { fetchSwaps, updateSwapStatus } from '../../redux/modules/admin';
 import { cancelAllSwaps } from '../../redux/modules/swap';
 import * as XLSX from 'xlsx';
 import usePersistedState from '../hooks/usePersistedState'; // Import the custom hook
-import FilterDropdown from '../common/FilterDropdown'; // Import the FilterDropdown component
 
 const AllSwapRequests = () => {
   const dispatch = useDispatch();
@@ -12,12 +11,6 @@ const AllSwapRequests = () => {
   const loading = useSelector((state) => state.admin.loading.allSwaps);
   const error = useSelector((state) => state.admin.error);
 
-  const [filters, setFilters] = usePersistedState('filters', {
-    requester: '',
-    recipient: '',
-    status: '',
-    adminApproval: ''
-  });
   const [actionError, setActionError] = usePersistedState('actionError', null);
 
   useEffect(() => {
@@ -33,14 +26,6 @@ const AllSwapRequests = () => {
 
   // Debugging: Log the swaps array
   console.log('Swaps:', swaps);
-
-  const handleFilterChange = useCallback((filterName) => (e) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [filterName]: e.target.value
-    }));
-    console.log(`Filter ${filterName} changed to:`, e.target.value); // Debugging statement
-  }, [setFilters]);
 
   const getUniqueValues = useCallback((key) => {
     const values = swaps.flatMap((swap) => {
@@ -76,26 +61,14 @@ const AllSwapRequests = () => {
   };
 
   const filteredSwaps = useMemo(() => {
-    console.log('Filtering swaps with filters:', filters); // Debugging statement
+    console.log('Filtering swaps'); // Debugging statement
     try {
-      return swaps.filter((swap) => {
-        const requester = swap.requester?.username || 'N/A';
-        const recipient = swap.recipient?.username || 'N/A';
-        const status = swap.status || 'N/A';
-        const adminApproval = swap.adminApproval || 'N/A';
-
-        return (
-          (filters.requester === '' || requester === filters.requester) &&
-          (filters.recipient === '' || recipient === filters.recipient) &&
-          (filters.status === '' || status === filters.status) &&
-          (filters.adminApproval === '' || adminApproval === filters.adminApproval)
-        );
-      });
+      return swaps;
     } catch (error) {
       console.error('Error filtering swaps:', error);
       return [];
     }
-  }, [swaps, filters]);
+  }, [swaps]);
 
   const exportToExcel = useCallback(() => {
     try {
@@ -131,44 +104,12 @@ const AllSwapRequests = () => {
       <table>
         <thead>
           <tr>
-            <th>
-              Requester
-              <FilterDropdown
-                value={filters.requester}
-                onChange={handleFilterChange('requester')}
-                options={getUniqueValues('requester.username')}
-                ariaLabel="Filter by requester"
-              />
-            </th>
-            <th>
-              Recipient
-              <FilterDropdown
-                value={filters.recipient}
-                onChange={handleFilterChange('recipient')}
-                options={getUniqueValues('recipient.username')}
-                ariaLabel="Filter by recipient"
-              />
-            </th>
+            <th>Requester</th>
+            <th>Recipient</th>
             <th>Requester Schedule</th>
             <th>Recipient Schedule</th>
-            <th>
-              Status
-              <FilterDropdown
-                value={filters.status}
-                onChange={handleFilterChange('status')}
-                options={getUniqueValues('status')}
-                ariaLabel="Filter by status"
-              />
-            </th>
-            <th>
-              Approval
-              <FilterDropdown
-                value={filters.adminApproval}
-                onChange={handleFilterChange('adminApproval')}
-                options={getUniqueValues('adminApproval')}
-                ariaLabel="Filter by approval"
-              />
-            </th>
+            <th>Status</th>
+            <th>Approval</th>
           </tr>
         </thead>
         <tbody>
