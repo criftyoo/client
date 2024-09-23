@@ -35,10 +35,10 @@ const useAvailableSchedules = (schedules, users, user, selectedWeek) => {
       return [];
     }
 
-    const requesterSchedule = schedules.find(schedule => schedule.user._id === user._id);
+    const requesterSchedule = schedules.find(schedule => schedule.user._id === user._id && schedule.week === selectedWeek);
 
     if (!requesterSchedule) {
-      console.log("Requester schedule not found.");
+      console.log("Requester schedule not found for the selected week.");
       return [];
     }
 

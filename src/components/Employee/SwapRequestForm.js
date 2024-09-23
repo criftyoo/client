@@ -39,10 +39,10 @@ const SwapRequestForm = () => {
       return;
     }
 
-    const requesterSchedule = schedules.find((schedule) => schedule.user && schedule.user._id === user._id);
+    const requesterSchedule = schedules.find((schedule) => schedule.user && schedule.user._id === user._id && schedule.week === selectedWeek);
 
     if (!requesterSchedule) {
-      setFormError("You have no active schedules to swap.");
+      setFormError("You have no active schedules to swap for the selected week.");
       return;
     }
 
@@ -57,7 +57,7 @@ const SwapRequestForm = () => {
       )
     );
     
-  }, [schedules, user, dispatch]);
+  }, [schedules, user, selectedWeek, dispatch]);
 
   const { formData, formError, handleChange, handleSubmit, setFormError } = useForm({ selectedScheduleId: "" }, onSubmit);
 

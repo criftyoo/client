@@ -39,10 +39,10 @@ const AllSwapRequests = () => {
     return [...new Set(values)];
   }, [swaps]);
 
-  const handleAccept = async (id, requesterId, recipientId) => {
+  const handleAccept = async (id, requesterId, recipientId, week) => {
     try {
       await dispatch(updateSwapStatus(id, 'approved', 'Swap has been approved by the WFM', 'admin', 'approved'));
-      await dispatch(cancelAllSwaps(requesterId, recipientId));
+      await dispatch(cancelAllSwaps(requesterId, recipientId, week));
       dispatch(fetchSwaps());
     } catch (err) {
       setActionError('Error approving swap');
@@ -89,6 +89,10 @@ const AllSwapRequests = () => {
     }
   }, [filteredSwaps]);
 
+  const handleRefresh = () => {
+    dispatch(fetchSwaps());
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -101,6 +105,7 @@ const AllSwapRequests = () => {
     <div className="main">
       <h2 className="form-title">Swap Requests</h2>
       <button className="btn-primary" onClick={exportToExcel}>Download as Excel</button>
+      <button className="btn-secondary" onClick={handleRefresh}>Refresh</button>
       <table>
         <thead>
           <tr>
@@ -124,7 +129,7 @@ const AllSwapRequests = () => {
                 <td>
                   {swap.status === 'pending' ? (
                     <>
-                      <button onClick={() => handleAccept(swap._id, swap.requester._id, swap.recipient._id,swap.requesterSchedule.week)}>Accept</button>
+                      <button onClick={() => handleAccept(swap._id, swap.requester._id, swap.recipient._id, swap.requesterSchedule.week)}>Accept</button>
                       <button onClick={() => handleReject(swap._id)}>Reject</button>
                     </>
                   ) : (
