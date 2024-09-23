@@ -1,6 +1,6 @@
 import { useMemo, useCallback } from "react";
 
-const useAvailableSchedules = (schedules, users, user) => {
+const useAvailableSchedules = (schedules, users, user, selectedWeek) => {
   const parseStartTime = useCallback((timeRange) => {
     if (!timeRange) {
       console.error("Time range is undefined or null:", timeRange);
@@ -28,10 +28,10 @@ const useAvailableSchedules = (schedules, users, user) => {
   }, [parseStartTime]);
 
   return useMemo(() => {
-    console.log("useAvailableSchedules inputs:", { schedules, users, user });
+    console.log("useAvailableSchedules inputs:", { schedules, users, user, selectedWeek });
 
-    if (!schedules.length || !users.length || !user) {
-      console.log("Missing schedules, users, or user data.");
+    if (!schedules.length || !users.length || !user || !selectedWeek) {
+      console.log("Missing schedules, users, user data, or selected week.");
       return [];
     }
 
@@ -45,6 +45,11 @@ const useAvailableSchedules = (schedules, users, user) => {
     const eligibleSchedules = [];
 
     schedules.forEach(schedule => {
+      if (schedule.week !== selectedWeek) {
+        console.log(`Skipping schedule ID: ${schedule._id} for week: ${schedule.week}`);
+        return;
+      }
+
       const scheduleUser = users.find(u => u._id === schedule.user._id);
 
       if (!scheduleUser) {
@@ -96,7 +101,7 @@ const useAvailableSchedules = (schedules, users, user) => {
 
     console.log("Available schedules before return:", eligibleSchedules);
     return eligibleSchedules;
-  }, [schedules, users, user, isStartTimeGreaterOrEqual]);
+  }, [schedules, users, user, selectedWeek, isStartTimeGreaterOrEqual]);
 };
 
 export default useAvailableSchedules;

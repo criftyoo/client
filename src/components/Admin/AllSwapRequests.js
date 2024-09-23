@@ -124,7 +124,7 @@ const AllSwapRequests = () => {
                 <td>
                   {swap.status === 'pending' ? (
                     <>
-                      <button onClick={() => handleAccept(swap._id, swap.requester._id, swap.recipient._id)}>Accept</button>
+                      <button onClick={() => handleAccept(swap._id, swap.requester._id, swap.recipient._id,swap.requesterSchedule.week)}>Accept</button>
                       <button onClick={() => handleReject(swap._id)}>Reject</button>
                     </>
                   ) : (

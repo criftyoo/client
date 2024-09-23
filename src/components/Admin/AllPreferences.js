@@ -1,18 +1,12 @@
-import React, { useEffect, useMemo, useCallback } from 'react';
+import React, { useEffect, useMemo, useCallback, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { getAllPreferences } from '../../redux/modules/preferences';
 import * as XLSX from 'xlsx';
 import usePersistedState from '../hooks/usePersistedState';
-import FilterDropdown from '../common/FilterDropdown';
 
 const AllPreferences = () => {
     const [preferences, setPreferences] = usePersistedState('preferences', []);
-    const [filters, setFilters] = usePersistedState('filters', {
-        username: '',
-        preferredShift: '',
-        preferredOffDays: '',
-        week: ''
-    });
+    const [searchQuery, setSearchQuery] = useState('');
 
     const dispatch = useDispatch();
     const loading = useSelector((state) => state.preferences.loading);
@@ -32,28 +26,12 @@ const AllPreferences = () => {
         }
     }, [preferencesFromStore, setPreferences]);
 
-    const getUniqueValues = useCallback((key) => {
-        const values = preferences.flatMap((preference) => {
-            const keys = key.split('.');
-            let value = preference;
-            for (const k of keys) {
-                value = value ? value[k] : 'N/A';
-            }
-            return Array.isArray(value) ? value : value || 'N/A';
-        });
-        return [...new Set(values)];
-    }, [preferences]);
-
-    const handleFilterChange = useCallback((filterName) => (e) => {
-        setFilters((prevFilters) => ({
-            ...prevFilters,
-            [filterName]: e.target.value
-        }));
-        console.log(`Filter ${filterName} changed to:`, e.target.value); // Debugging statement
-    }, [setFilters]);
+    const handleSearch = (e) => {
+        setSearchQuery(e.target.value);
+    };
 
     const filteredPreferences = useMemo(() => {
-        console.log('Filtering preferences with filters:', filters); // Debugging statement
+        console.log('Filtering preferences with search query:', searchQuery); // Debugging statement
         try {
             return preferences.filter((preference) => {
                 const { user, preferredShift, preferredOffDays, week } = preference;
@@ -62,17 +40,17 @@ const AllPreferences = () => {
                 const weekStr = week || 'N/A';
 
                 return (
-                    (filters.username === '' || username === filters.username) &&
-                    (filters.preferredShift === '' || preferredShift === filters.preferredShift) &&
-                    (filters.preferredOffDays === '' || preferredOffDaysStr.includes(filters.preferredOffDays)) &&
-                    (filters.week === '' || weekStr === filters.week)
+                    username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    preferredShift.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    preferredOffDaysStr.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    weekStr.toLowerCase().includes(searchQuery.toLowerCase())
                 );
             });
         } catch (error) {
             console.error('Error filtering preferences:', error);
             return [];
         }
-    }, [preferences, filters]);
+    }, [preferences, searchQuery]);
 
     const exportToExcel = useCallback(() => {
         try {
@@ -102,46 +80,23 @@ const AllPreferences = () => {
     return (
         <div className='main'>
             <h2 className='form-title'>Schedule Preferences</h2>
+            <input
+                type="text"
+                placeholder="Search by username, preferred shift, off days, or week..."
+                value={searchQuery}
+                onChange={handleSearch}
+                className="search-input"
+                aria-label="Search preferences"
+            />
             <button className='btn-primary' onClick={exportToExcel}>Download as Excel</button>
             <table>
                 <thead>
                     <tr>
-                        <th>
-                            Username
-                            <FilterDropdown
-                                value={filters.username}
-                                onChange={handleFilterChange('username')}
-                                options={getUniqueValues('user.username')}
-                                ariaLabel="Filter by username"
-                            />
-                        </th>
-                        <th>
-                            Preferred Shift
-                            <FilterDropdown
-                                value={filters.preferredShift}
-                                onChange={handleFilterChange('preferredShift')}
-                                options={getUniqueValues('preferredShift')}
-                                ariaLabel="Filter by preferred shift"
-                            />
-                        </th>
-                        <th>
-                            Preferred Off Days
-                            <FilterDropdown
-                                value={filters.preferredOffDays}
-                                onChange={handleFilterChange('preferredOffDays')}
-                                options={getUniqueValues('preferredOffDays')}
-                                ariaLabel="Filter by preferred off days"
-                            />
-                        </th>
-                        <th>
-                            Week
-                            <FilterDropdown
-                                value={filters.week}
-                                onChange={handleFilterChange('week')}
-                                options={getUniqueValues('week')}
-                                ariaLabel="Filter by week"
-                            />
-                        </th>
+                        <th>Username</th>
+                        <th>Preferred Shift</th>
+                        <th>Preferred Off Days</th>
+                        <th>Creation Date</th>
+                        <th>Week</th>
                     </tr>
                 </thead>
                 <tbody>

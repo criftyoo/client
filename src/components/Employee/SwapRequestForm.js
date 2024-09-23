@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createSwapRequestAction, resetSwapRequest } from "../../redux/modules/employee";
 import { fetchSchedules } from "../../redux/modules/admin";
@@ -11,6 +11,7 @@ import ErrorMessage from "../common/ErrorMessage";
 
 const SwapRequestForm = () => {
   const dispatch = useDispatch();
+  const [selectedWeek, setSelectedWeek] = useState("");
 
   useEffect(() => {
     dispatch(fetchSchedules());
@@ -21,7 +22,7 @@ const SwapRequestForm = () => {
   const { users = [], usersLoading, user } = useSelector((state) => state.users || {});
   const { error, loadingSwap, swapRequest } = useSelector((state) => state.employee || {});
 
-  const availableSchedules = useAvailableSchedules(schedules, users, user);
+  const availableSchedules = useAvailableSchedules(schedules, users, user, selectedWeek);
 
   const onSubmit = useCallback((formData, setFormError) => {
     const { selectedScheduleId } = formData;
@@ -74,6 +75,14 @@ const SwapRequestForm = () => {
       <h2 className="form-title">Swap Requester</h2>
       {loadingSchedules && <LoadingMessage message="Loading schedules..." />}
       {usersLoading && <LoadingMessage message="Loading users..." />}
+
+      <label>Select a week:</label>
+      <select value={selectedWeek} onChange={(e) => setSelectedWeek(e.target.value)} required>
+        <option value="">--Select Week--</option>
+        {[...new Set(schedules.map(schedule => schedule.week))].map(week => (
+          <option key={week} value={week}>{week}</option>
+        ))}
+      </select>
 
       {!loadingSchedules && !usersLoading && schedules && user && (
         <SwapRequestFormContent

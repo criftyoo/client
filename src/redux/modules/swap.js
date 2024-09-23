@@ -111,10 +111,10 @@ export const cancelSwapRequest = (swapId) => async (dispatch) => {
 };
 
 // Cancel All Swap Requests Action
-export const cancelAllSwaps = (requesterId, recipientId) => async (dispatch) => {
+export const cancelAllSwaps = (requesterId, recipientId, week) => async (dispatch) => {
   try {
     dispatch({ type: CANCEL_ALL_SWAPS_REQUEST });
-    const { data } = await api.put(`/swap/cancel-all`, { requesterId, recipientId });
+    const { data } = await api.put(`/swap/cancel-all`, { requesterId, recipientId, week });
     dispatch({ type: CANCEL_ALL_SWAPS_SUCCESS, payload: data });
   } catch (error) {
     dispatch({ type: CANCEL_ALL_SWAPS_FAIL, payload: error.message });
