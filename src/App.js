@@ -18,7 +18,6 @@ import SwapRequestForm from "./components/Employee/SwapRequestForm";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import EmployeeDashboard from "./components/Employee/EmployeeDashboard";
 import PrivateRoute from "./components/common/PrivateRoute"; // Import updated PrivateRoute
-import Notification from "./components/common/Notification";
 import { loadUser } from "./redux/modules/users"; // Import loadUser action
 
 const options = {
@@ -36,7 +35,6 @@ function Main() {
     <>
       <Alert />
       {!hideNavbarPaths.includes(location.pathname) && <Navbar />}
-      <Notification />
       <ErrorBoundary>
         <Routes>
           <Route exact path="/" element={<Landing />} />

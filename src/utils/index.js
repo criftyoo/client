@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const serverUrl = "https://scheduler-server-a6deb2hrgug8evbw.westeurope-01.azurewebsites.net/";
+const serverUrl = "http://localhost:4000";
 
 export const api = axios.create({
   baseURL: serverUrl,

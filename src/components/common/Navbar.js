@@ -8,10 +8,11 @@ import {
 } from "../../redux/modules/users";
 import socketIOClient from "socket.io-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
+import { faExclamationCircle, faBell } from "@fortawesome/free-solid-svg-icons";
 import ClientReportForm from "../ReportIssues/ReportIssuesForm";
+import Notification from "./Notification"; 
 
-const ENDPOINT = "https://scheduler-server-a6deb2hrgug8evbw.westeurope-01.azurewebsites.net"; 
+const ENDPOINT = "http://localhost:4000"; 
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -34,27 +35,29 @@ const Navbar = () => {
   }, [openForSwap]);
 
   useEffect(() => {
-    const socket = socketIOClient(ENDPOINT);
+    if (isAuthenticated) {
+      const socket = socketIOClient(ENDPOINT);
 
-    socket.on("connect", () => {
-      console.log("Connected to Socket.IO server");
-    });
+      socket.on("connect", () => {
+        console.log("Connected to Socket.IO server");
+      });
 
-    socket.on("notification", (notification) => {
-      setNotifications((prevNotifications) => [
-        notification,
-        ...prevNotifications,
-      ]);
-    });
+      socket.on("notification", (notification) => {
+        setNotifications((prevNotifications) => [
+          notification,
+          ...prevNotifications,
+        ]);
+      });
 
-    socket.on("disconnect", () => {
-      console.log("Disconnected from Socket.IO server");
-    });
+      socket.on("disconnect", () => {
+        console.log("Disconnected from Socket.IO server");
+      });
 
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
+      return () => {
+        socket.disconnect();
+      };
+    }
+  }, [isAuthenticated]);
 
   const handleToggleClick = () => {
     const formData = { isOpenForSwap: !toggled };
@@ -81,7 +84,6 @@ const Navbar = () => {
         <Link className="logo-navbar" to="/">
           Scheduler
         </Link>
-        
       </h1>
       <Fragment>
         <ul>
@@ -98,32 +100,25 @@ const Navbar = () => {
               </div>
             )}
           </li>
-          <li className="notifications">
-            <div onClick={handleNotificationsClick}>
-              <i className="fas fa-bell"></i>{" "}
-              {notifications.length > 0 && (
-                <span className="notification-count">
-                  {notifications.length}
-                </span>
-              )}
-            </div>
-            {showNotifications && (
-              <div className="notification-dropdown">
-                {notifications.length === 0 ? (
-                  <div className="notification-item">No new notifications</div>
-                ) : (
-                  notifications.map((notification, index) => (
-                    <div key={index} className="notification-item">
-                      {notification.message}
-                    </div>
-                  ))
+          {isAuthenticated && (
+            <li className="notifications">
+              <div onClick={handleNotificationsClick}>
+                <FontAwesomeIcon
+                  icon={faBell}
+                  className={`bell-icon ${notifications.length > 0 ? "has-notifications" : ""}`}
+                />
+                {notifications.length > 0 && (
+                  <span className="notification-count">
+                    {notifications.length}
+                  </span>
                 )}
               </div>
-            )}
-          </li>
+              {showNotifications && <Notification notifications={notifications} />}
+            </li>
+          )}
           {isAuthenticated && user && user.role === "employee" && (
             <>
-                  <span>Hello {user.username}</span>
+              <span>Hello {user.username}</span>
               <li>
                 <button
                   className={`toggle-btn ${toggled ? "toggled" : ""}`}
